@@ -1,0 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Light mode styles */
+.light-mode {
+    /* Define your light mode styles here */
+    /* Example: */
+    background-color: #ffffff;
+    color: #333333;
+}
+
+/* Dark mode styles */
+.dark-mode {
+    /* Define your dark mode styles here */
+    /* Example: */
+    background-color: #333333;
+    color: #ffffff;
+}
