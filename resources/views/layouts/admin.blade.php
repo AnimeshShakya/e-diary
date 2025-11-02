@@ -31,7 +31,15 @@
     </style>
 </head>
 <body class="bg-[#0c0c0c] text-gray-100 font-sans antialiased" x-data="{ sidebarOpen: true }">
-    
+    @php
+        $user = auth()->user();
+        $isAdmin = $user && method_exists($user, 'isAdmin') && $user->isAdmin();
+        $diariesRoute = \Illuminate\Support\Facades\Route::has('diaries.index') ? route('diaries.index') : url('/');
+        $adminDashboardRoute = \Illuminate\Support\Facades\Route::has('admin.dashboard') ? route('admin.dashboard') : url('/');
+        $homeRoute = $isAdmin ? $adminDashboardRoute : $diariesRoute;
+        $panelSubtitle = $isAdmin ? 'Admin Panel' : 'Dashboard';
+    @endphp
+
     <div class="min-h-screen flex">
         {{-- Floating Sidebar --}}
         <aside 
@@ -46,7 +54,7 @@
         >
             {{-- Logo Section --}}
             <div class="p-6 border-b border-gray-800/50">
-                <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3 group">
+                <a href="{{ $homeRoute }}" class="flex items-center gap-3 group">
                     <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg group-hover:shadow-indigo-500/50 transition-all duration-300">
                         <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
@@ -54,36 +62,47 @@
                     </div>
                     <div>
                         <div class="font-semibold text-lg">Daily Diary</div>
-                        <div class="text-xs text-gray-500">Admin Panel</div>
+                        <div class="text-xs text-gray-500">{{ $panelSubtitle }}</div>
                     </div>
                 </a>
             </div>
 
             {{-- Navigation --}}
             <nav class="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
-                <x-admin.sidebar-link href="{{ route('admin.dashboard') }}" icon="home">
-                    Dashboard
-                </x-admin.sidebar-link>
-                <x-admin.sidebar-link href="{{ route('admin.users.index') }}" icon="users">
-                    Users
-                </x-admin.sidebar-link>
-                <x-admin.sidebar-link href="{{ route('admin.diaries.index') }}" icon="book-open">
-                    Diaries
-                </x-admin.sidebar-link>
-                <x-admin.sidebar-link href="{{ route('admin.moderation') }}" icon="shield-alert">
-                    Moderation
-                </x-admin.sidebar-link>
+                @if($isAdmin)
+                    <x-admin.sidebar-link href="{{ route('admin.dashboard') }}" icon="home">
+                        Dashboard
+                    </x-admin.sidebar-link>
+                    <x-admin.sidebar-link href="{{ route('admin.users.index') }}" icon="users">
+                        Users
+                    </x-admin.sidebar-link>
+                    <x-admin.sidebar-link href="{{ route('admin.diaries.index') }}" icon="book-open">
+                        Diaries
+                    </x-admin.sidebar-link>
+                    <x-admin.sidebar-link href="{{ route('admin.checklists.index') }}" icon="check-circle">
+                        Checklists
+                    </x-admin.sidebar-link>
+                @else
+                    <x-admin.sidebar-link href="{{ $diariesRoute }}" icon="book-open">
+                        My Diaries
+                    </x-admin.sidebar-link>
+                    @if(\Illuminate\Support\Facades\Route::has('settings.password'))
+                        <x-admin.sidebar-link href="{{ route('settings.password') }}" icon="lock-closed">
+                            Password
+                        </x-admin.sidebar-link>
+                    @endif
+                @endif
             </nav>
 
             {{-- User Profile & Logout --}}
             <div class="p-4 border-t border-gray-800/50">
                 <div class="flex items-center gap-3 mb-3 p-3 rounded-xl bg-gray-900/30">
                     <div class="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-400 to-purple-500 flex items-center justify-center text-sm font-semibold">
-                        {{ substr(auth()->user()->name ?? 'A', 0, 1) }}
+                        {{ substr($user->name ?? 'A', 0, 1) }}
                     </div>
                     <div class="flex-1 min-w-0">
-                        <div class="text-sm font-medium truncate">{{ auth()->user()->name ?? 'Admin' }}</div>
-                        <div class="text-xs text-gray-500 truncate">{{ auth()->user()->email ?? '' }}</div>
+                        <div class="text-sm font-medium truncate">{{ $user->name ?? 'User' }}</div>
+                        <div class="text-xs text-gray-500 truncate">{{ $user->email ?? '' }}</div>
                     </div>
                 </div>
                 <form method="POST" action="{{ route('logout') }}">

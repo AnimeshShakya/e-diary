@@ -76,6 +76,8 @@ class DiaryController extends Controller
      */
     public function update(UpdateDiaryRequest $request, Diary $diary): RedirectResponse
     {
+        Gate::authorize('update', $diary);
+
         $diary->update($request->validated());
 
         return redirect()

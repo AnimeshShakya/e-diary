@@ -2,11 +2,12 @@
 
 namespace App\Livewire\Admin\Diaries;
 
+use App\Models\Checklist;
 use App\Models\Diary;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
-use Illuminate\Support\Facades\Auth;
 
 #[Layout('layouts.admin')]
 class Create extends Component
@@ -46,6 +47,15 @@ class Create extends Component
         'checklist_array' => null,
     ];
 
+    /** @var int[] */
+    public array $selectedChecklists = [];
+
+    public function mount(): void
+    {
+        $this->selectedChecklists = [];
+        $this->syncChecklistArray();
+    }
+
     protected function rules(): array
     {
         return [
@@ -66,11 +76,12 @@ class Create extends Component
         ];
     }
 
-    public function save(): \Illuminate\Http\RedirectResponse
+    public function save(): mixed
     {
+        $this->syncChecklistArray();
         $validated = $this->validate();
         $data = $validated['form'];
-    $data['user_id'] = Auth::id();
+        $data['user_id'] = Auth::id();
 
         Diary::create($data);
 
@@ -81,7 +92,24 @@ class Create extends Component
 
     public function render(): View
     {
-        return view('livewire.admin.diaries.create');
+        return view('livewire.admin.diaries.create', [
+            'checklists' => Checklist::query()->orderBy('name')->get(),
+        ]);
+    }
+
+    public function toggleChecklist(int $id): void
+    {
+        if (in_array($id, $this->selectedChecklists, true)) {
+            $this->selectedChecklists = array_values(array_diff($this->selectedChecklists, [$id]));
+        } else {
+            $this->selectedChecklists[] = $id;
+        }
+        $this->syncChecklistArray();
+    }
+
+    private function syncChecklistArray(): void
+    {
+        $this->form['checklist_array'] = json_encode($this->selectedChecklists);
     }
 
     public function layoutData(): array

@@ -10,11 +10,11 @@
                         @endforeach
                     </select>
                     @error('form.user_id') <p class="text-red-400 text-sm mt-1">{{ $message }}</p> @enderror
+                <div class="md:col-span-2">
+                    <label class="block text-sm text-gray-400 mb-1">Checklist</label>
+                    <textarea rows="2" wire:model.defer="form.checklist_array" class="w-full rounded-xl border-gray-800 bg-gray-900/40 text-gray-200 focus:border-indigo-500 focus:ring-indigo-500"></textarea>
+                    @error('form.checklist_array') <p class="text-red-400 text-sm mt-1">{{ $message }}</p> @enderror
                 </div>
-                <div>
-                    <label class="block text-sm text-gray-400 mb-1">Date</label>
-                    <input type="date" wire:model.defer="form.date" class="w-full rounded-xl border-gray-800 bg-gray-900/40 text-gray-200 focus:border-indigo-500 focus:ring-indigo-500" />
-                    @error('form.date') <p class="text-red-400 text-sm mt-1">{{ $message }}</p> @enderror
                 </div>
                 <div>
                     <label class="block text-sm text-gray-400 mb-1">Yesterday Sleep Time</label>

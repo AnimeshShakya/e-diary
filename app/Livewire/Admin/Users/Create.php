@@ -4,6 +4,7 @@ namespace App\Livewire\Admin\Users;
 
 use App\Models\User;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use Livewire\Attributes\Layout;
@@ -34,10 +35,9 @@ class Create extends Component
         ];
     }
 
-    public function save(): \Illuminate\Http\RedirectResponse
+    public function save(): RedirectResponse
     {
         $this->validate();
-
         User::create([
             'name' => $this->form['name'],
             'email' => $this->form['email'],
