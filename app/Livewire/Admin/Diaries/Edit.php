@@ -2,12 +2,12 @@
 
 namespace App\Livewire\Admin\Diaries;
 
-use Livewire\Component;
-use Livewire\Attributes\Layout;
-use Illuminate\Validation\Rule;
 use App\Models\Diary;
 use App\Models\User;
 use Illuminate\Contracts\View\View;
+use Illuminate\Validation\Rule;
+use Livewire\Attributes\Layout;
+use Livewire\Component;
 
 #[Layout('layouts.admin')]
 class Edit extends Component

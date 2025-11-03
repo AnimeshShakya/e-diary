@@ -1,9 +1,19 @@
 <div class="space-y-8">
+    {{-- Lifestyle Dashboard Widgets --}}
+    <div class="grid grid-cols-1 gap-6">
+        {{-- Render each widget full width --}}
+        @livewire('dashboard.monthly-checklist-bar')
+        @livewire('dashboard.yearly-checklist-comparison')
+        <div>
+            @livewire('dashboard.time-usage-trend')
+        </div>
+    </div>
+
     {{-- Stats Cards Grid --}}
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {{-- Total Users Card --}}
         <div 
-            class="group relative p-6 rounded-2xl bg-gradient-to-br from-[#1a1a1a] to-[#111111] border border-gray-800/50 hover:border-indigo-500/50 transition-all duration-300 overflow-hidden animate-fade-in-up"
+            class="group relative p-6 h-100 rounded-2xl bg-gradient-to-br from-[#1a1a1a] to-[#111111] border border-gray-800/50 hover:border-indigo-500/50 transition-all duration-300 overflow-hidden animate-fade-in-up"
             style="animation-delay: 0ms"
         >
             {{-- Glow effect --}}
@@ -66,51 +76,7 @@
         </div>
     </div>
 
-    {{-- Recent Activity Section --}}
-    <div class="rounded-2xl bg-gradient-to-br from-[#1a1a1a] to-[#111111] border border-gray-800/50 overflow-hidden animate-fade-in-up" style="animation-delay: 300ms">
-        <div class="p-6 border-b border-gray-800/50">
-            <div class="flex items-center justify-between">
-                <h2 class="text-lg font-semibold flex items-center gap-2">
-                    <svg class="w-5 h-5 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M11.35 3.836c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m8.9-4.414c.376.023.75.05 1.124.08 1.131.094 1.976 1.057 1.976 2.192V16.5A2.25 2.25 0 0 1 18 18.75h-2.25m-7.5-10.5H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V18.75m-7.5-10.5h6.375c.621 0 1.125.504 1.125 1.125v9.375m-8.25-3 1.5 1.5 3-3.75" />
-                    </svg>
-
-                    Checklist
-                </h2>
-                <button class="text-sm text-indigo-400 hover:text-indigo-300 transition-colors">View all</button>
-            </div>
-        </div>
-        
-        <div class="p-6">
-            @if(count($recentActivity) > 0)
-                <div class="space-y-4">
-                    @foreach($recentActivity as $act)
-                        <div class="flex items-center gap-4 p-4 rounded-xl bg-gray-900/30 hover:bg-gray-900/50 transition-colors group">
-                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center flex-shrink-0">
-                                <span class="text-xs font-semibold">{{ substr($act->admin_id ?? 'A', 0, 1) }}</span>
-                            </div>
-                            <div class="flex-1 min-w-0">
-                                <p class="text-sm font-medium text-gray-200">{{ $act->action }}</p>
-                                <p class="text-xs text-gray-500">Admin ID: {{ $act->admin_id }}</p>
-                            </div>
-                            <span class="text-xs text-gray-500 group-hover:text-gray-400 transition-colors">
-                                {{ \Carbon\Carbon::parse($act->created_at)->diffForHumans() }}
-                            </span>
-                        </div>
-                    @endforeach
-                </div>
-            @else
-                <div class="text-center py-12">
-                    <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-800/50 flex items-center justify-center">
-                        <svg class="w-8 h-8 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
-                        </svg>
-                    </div>
-                    <p class="text-gray-500 text-sm">No recent activity</p>
-                </div>
-            @endif
-        </div>
-    </div>
+    {{-- Monthly and Yearly cards are rendered above via Livewire components to ensure identical card UI; removing duplicate placeholder blocks. --}}
 
     {{-- Quick Actions --}}
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 animate-fade-in-up" style="animation-delay: 400ms">

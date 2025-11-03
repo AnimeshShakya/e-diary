@@ -79,13 +79,23 @@
                     <x-admin.sidebar-link href="{{ route('admin.diaries.index') }}" icon="book-open">
                         Diaries
                     </x-admin.sidebar-link>
-                    <x-admin.sidebar-link href="{{ route('admin.checklists.index') }}" icon="check-circle">
+                    <x-admin.sidebar-link href="{{ route('admin.checklists.index') }}" icon="checklist">
                         Checklists
                     </x-admin.sidebar-link>
+                    @if(\Illuminate\Support\Facades\Route::has('affirmations.index'))
+                        <x-admin.sidebar-link href="{{ route('affirmations.index') }}" icon="affirmations">
+                            Affirmations
+                        </x-admin.sidebar-link>
+                    @endif
                 @else
                     <x-admin.sidebar-link href="{{ $diariesRoute }}" icon="book-open">
                         My Diaries
                     </x-admin.sidebar-link>
+                    @if(\Illuminate\Support\Facades\Route::has('affirmations.index'))
+                        <x-admin.sidebar-link href="{{ route('affirmations.index') }}" icon="affirmations">
+                            Affirmations
+                        </x-admin.sidebar-link>
+                    @endif
                     @if(\Illuminate\Support\Facades\Route::has('settings.password'))
                         <x-admin.sidebar-link href="{{ route('settings.password') }}" icon="lock-closed">
                             Password

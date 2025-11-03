@@ -11,6 +11,9 @@ use App\Livewire\Admin\Diaries\Index as AdminDiariesIndex;
 use App\Livewire\Admin\Users\Create as AdminUsersCreate;
 use App\Livewire\Admin\Users\Edit as AdminUsersEdit;
 use App\Livewire\Admin\Users\Index as AdminUsersIndex;
+use App\Livewire\Affirmations\Create as AffirmationsCreate;
+use App\Livewire\Affirmations\Edit as AffirmationsEdit;
+use App\Livewire\Affirmations\Index as AffirmationsIndex;
 use App\Livewire\Diaries\Create as DiariesCreate;
 use App\Livewire\Diaries\Edit as DiariesEdit;
 use App\Livewire\Diaries\Index as DiariesIndex;
@@ -53,6 +56,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/diaries', DiariesIndex::class)->name('diaries.index');
     Route::get('/diaries/create', DiariesCreate::class)->name('diaries.create');
     Route::get('/diaries/{diary}/edit', DiariesEdit::class)->name('diaries.edit');
+
+    // Affirmations - accessible to all authenticated users (admin and non-admin)
+    Route::get('/affirmations', AffirmationsIndex::class)->name('affirmations.index');
+    Route::get('/affirmations/create', AffirmationsCreate::class)->name('affirmations.create');
+    Route::get('/affirmations/{affirmation}/edit', AffirmationsEdit::class)->name('affirmations.edit');
 });
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
