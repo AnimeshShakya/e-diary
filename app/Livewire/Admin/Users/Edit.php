@@ -17,7 +17,7 @@ class Edit extends Component
     public ?User $user = null;
 
     /**
-     * @var array{name:string,email:string,password:?string,new_password:?string,password_confirmation:?string,role:string}
+     * @var array{name:string,email:string,password:?string,new_password:?string,password_confirmation:?string,role:string,is_active:bool}
      */
     public array $form = [
         'name' => '',
@@ -26,6 +26,7 @@ class Edit extends Component
         'new_password' => null,
         'password_confirmation' => null,
         'role' => 'user',
+        'is_active' => true,
     ];
 
     public function mount(?User $user = null): void
@@ -49,6 +50,7 @@ class Edit extends Component
             'new_password' => null,
             'password_confirmation' => null,
             'role' => $targetUser->role ?? 'user',
+            'is_active' => $targetUser->is_active ?? true,
         ];
     }
 
@@ -64,6 +66,7 @@ class Edit extends Component
                 'form.new_password' => ['nullable', 'string', 'min:8', 'same:form.password_confirmation'],
                 'form.password_confirmation' => ['nullable', 'string', 'min:8'],
                 'form.role' => ['required', Rule::in(['user', 'admin', 'super_admin'])],
+                'form.is_active' => ['required', 'boolean'],
             ];
         }
 
@@ -84,6 +87,7 @@ class Edit extends Component
             $user->name = $this->form['name'];
             $user->email = $this->form['email'];
             $user->role = $this->form['role'];
+            $user->is_active = $this->form['is_active'];
         }
         if (! empty($this->form['new_password'])) {
             if (! Hash::check((string) ($this->form['password'] ?? ''), (string) $this->user->password)) {

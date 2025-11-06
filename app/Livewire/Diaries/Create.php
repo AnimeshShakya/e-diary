@@ -64,9 +64,11 @@ class Create extends Component
         $this->syncChecklistArray();
         $data = $this->validate()['form'];
         $data['user_id'] = Auth::id();
-        Diary::create($data);
+        $diary = Diary::create($data);
 
-        session()->flash('status', 'Diary created');
+        session()->flash('status', 'Diary created successfully!');
+        session()->flash('show_score', true);
+        session()->flash('diary_date', $diary->date);
 
         return redirect()->route('diaries.index');
     }

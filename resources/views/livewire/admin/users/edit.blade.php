@@ -38,6 +38,15 @@
                     </select>
                     @error('form.role') <p class="text-red-400 text-sm mt-1">{{ $message }}</p> @enderror
                 </div>
+                <div class="flex items-center gap-3">
+                    <label class="flex items-center cursor-pointer">
+                        <input type="checkbox" wire:model.defer="form.is_active" class="rounded border-gray-800 bg-gray-900/40 text-indigo-600 focus:ring-indigo-500 focus:ring-offset-gray-900" />
+                        <span class="ml-2 text-sm text-gray-400">
+                            Active (receive daily reminders)
+                        </span>
+                    </label>
+                    @error('form.is_active') <p class="text-red-400 text-sm mt-1">{{ $message }}</p> @enderror
+                </div>
             @endif
         </div>
         <div class="px-6 py-4 border-t border-gray-800/60 flex items-center justify-end gap-3">

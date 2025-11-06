@@ -22,6 +22,7 @@
                     <th class="px-4 py-3 text-left text-xs font-semibold text-gray-400">Name</th>
                     <th class="px-4 py-3 text-left text-xs font-semibold text-gray-400">Email</th>
                     <th class="px-4 py-3 text-left text-xs font-semibold text-gray-400">Role</th>
+                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-400">Status</th>
                     <th class="px-4 py-3 text-left text-xs font-semibold text-gray-400">Joined</th>
                     <th class="px-4 py-3 text-right text-xs font-semibold text-gray-400">Actions</th>
                 </tr>
@@ -32,6 +33,13 @@
                         <td class="px-4 py-3">{{ $user->name }}</td>
                         <td class="px-4 py-3 text-gray-300">{{ $user->email }}</td>
                         <td class="px-4 py-3"><span class="px-2 py-1 text-xs rounded bg-gray-800/60">{{ $user->role ?? 'user' }}</span></td>
+                        <td class="px-4 py-3">
+                            @if($user->is_active)
+                                <span class="px-2 py-1 text-xs rounded bg-green-500/20 text-green-400 border border-green-500/30">Active</span>
+                            @else
+                                <span class="px-2 py-1 text-xs rounded bg-gray-700/50 text-gray-400 border border-gray-600">Inactive</span>
+                            @endif
+                        </td>
                         <td class="px-4 py-3 text-gray-400">{{ $user->created_at->diffForHumans() }}</td>
                         <td class="px-4 py-3">
                             <div class="flex items-center justify-end gap-2">
@@ -42,7 +50,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="5" class="px-4 py-6 text-center text-gray-400">No users found.</td>
+                        <td colspan="6" class="px-4 py-6 text-center text-gray-400">No users found.</td>
                     </tr>
                 @endforelse
             </tbody>

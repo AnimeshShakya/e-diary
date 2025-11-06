@@ -88,11 +88,14 @@
                         </x-admin.sidebar-link>
                     @endif
                 @else
+                    <x-admin.sidebar-link href="{{ route('dashboard') }}" icon="home">
+                        Dashboard
+                    </x-admin.sidebar-link>
                     <x-admin.sidebar-link href="{{ $diariesRoute }}" icon="book-open">
                         My Diaries
                     </x-admin.sidebar-link>
                     @if(\Illuminate\Support\Facades\Route::has('affirmations.index'))
-                        <x-admin.sidebar-link href="{{ route('affirmations.index') }}" icon="affirmations">
+                        <x-admin.sidebar-link href="{{ route('affirmations.index') }}" icon="notadminaffirmations">
                             Affirmations
                         </x-admin.sidebar-link>
                     @endif

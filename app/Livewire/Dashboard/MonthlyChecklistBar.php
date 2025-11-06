@@ -31,7 +31,7 @@ class MonthlyChecklistBar extends Component
         $userId = Auth::id();
         $start = Carbon::today()->subDays(29)->toDateString();
         $end = Carbon::today()->toDateString();
-        // v2 cache key to avoid stale cached Collections 
+        // v2 cache key to avoid stale cached Collections
         $key = "dash:v2:mcb:{$userId}:{$start}:{$end}";
 
         $chart = Cache::remember($key, now()->addMinutes(15), function () use ($userId, $start, $end) {

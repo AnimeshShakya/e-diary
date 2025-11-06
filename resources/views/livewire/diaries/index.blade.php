@@ -1,13 +1,15 @@
 <div class="max-w-5xl mx-auto space-y-6">
-    {{-- Lifestyle Dashboard Widgets for Users --}}
-    <div class="grid grid-cols-1 gap-6">
-        {{-- Render each widget full width --}}
-        @livewire('dashboard.monthly-checklist-bar')
-        @livewire('dashboard.yearly-checklist-comparison')
-        <div>
-            @livewire('dashboard.time-usage-trend')
+    {{-- Show score calculator after creating diary --}}
+    @if(session('show_score') && session('diary_date'))
+        <div class="mb-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold text-gray-200">🎉 Diary Created Successfully!</h3>
+                <button onclick="this.closest('div').parentElement.style.display='none'" class="text-gray-400 hover:text-gray-200">✕</button>
+            </div>
+            @livewire('score-calculator', ['mode' => 'single', 'date' => session('diary_date')])
         </div>
-    </div>
+    @endif
+
     <div class="flex items-center justify-between">
         <h2 class="text-xl font-semibold">My Diaries</h2>
         <a href="{{ route('diaries.create') }}" class="px-4 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-500">New Diary</a>

@@ -14,6 +14,7 @@ use App\Livewire\Admin\Users\Index as AdminUsersIndex;
 use App\Livewire\Affirmations\Create as AffirmationsCreate;
 use App\Livewire\Affirmations\Edit as AffirmationsEdit;
 use App\Livewire\Affirmations\Index as AffirmationsIndex;
+use App\Livewire\Dashboard;
 use App\Livewire\Diaries\Create as DiariesCreate;
 use App\Livewire\Diaries\Edit as DiariesEdit;
 use App\Livewire\Diaries\Index as DiariesIndex;
@@ -27,7 +28,7 @@ Route::get('/', function () {
             return redirect()->route('admin.dashboard');
         }
 
-        return redirect()->route('diaries.index');
+        return redirect()->route('dashboard');
     }
 
     // Guests see the welcome page (aligns with auth scaffolding tests)
@@ -35,16 +36,9 @@ Route::get('/', function () {
 });
 
 // Provide a dashboard route for auth scaffolding/tests; redirect based on role to existing pages
-Route::middleware(['auth', 'verified'])->get('/dashboard', function () {
-    $user = Auth::user();
-    if ($user && method_exists($user, 'isAdmin') && $user->isAdmin()) {
-        return redirect()->route('admin.dashboard');
-    }
+Route::middleware(['auth', 'verified'])->get('/dashboard', Dashboard::class)->name('dashboard');
 
-    return redirect()->route('diaries.index');
-})->name('dashboard');
-
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
     // Password settings page (non-admins can change their own password here)
     Route::get('/account/password', \App\Livewire\Settings\Password::class)->name('settings.password');
 
@@ -61,9 +55,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/affirmations', AffirmationsIndex::class)->name('affirmations.index');
     Route::get('/affirmations/create', AffirmationsCreate::class)->name('affirmations.create');
     Route::get('/affirmations/{affirmation}/edit', AffirmationsEdit::class)->name('affirmations.edit');
+
+    // Score Calculator - accessible to all authenticated users
+    Route::get('/score-calculator', \App\Livewire\ScoreCalculator::class)->name('score-calculator');
 });
 
-Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', AdminDashboard::class)->name('dashboard');
     Route::get('/users', AdminUsersIndex::class)->name('users.index');
     Route::get('/users/create', AdminUsersCreate::class)->name('users.create');
