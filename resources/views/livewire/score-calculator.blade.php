@@ -1,5 +1,5 @@
 <div class="max-w-4xl mx-auto p-6 bg-white dark:bg-[#1a1a1a] rounded-lg shadow-lg">
-    <h2 class="text-3xl font-bold mb-6 text-center text-gray-800 dark:text-gray-200">📊 Daily Productivity Score Calculator</h2>
+    <h2 class="text-3xl font-bold mb-6 text-center text-gray-800 dark:text-gray-200">Daily Productivity Score Calculator</h2>
 
     <!-- Date Selector -->
     <div class="mb-6">
@@ -56,25 +56,25 @@
                     
                     <div class="grid grid-cols-2 gap-3">
                         <div class="p-3 bg-white dark:bg-gray-800 rounded">
-                            <div class="text-xs text-gray-500 dark:text-gray-400">😴 Sleep (hrs)</div>
+                            <div class="text-xs text-gray-500 dark:text-gray-400">Sleep (hrs)</div>
                             <div class="text-2xl font-bold text-gray-900 dark:text-white">{{ $sleep }}</div>
                             <div class="text-xs text-gray-500 dark:text-gray-400">Ideal: 6-8 hrs</div>
                         </div>
 
                         <div class="p-3 bg-white dark:bg-gray-800 rounded">
-                            <div class="text-xs text-gray-500 dark:text-gray-400">🎯 Management (hrs)</div>
+                            <div class="text-xs text-gray-500 dark:text-gray-400">Management (hrs)</div>
                             <div class="text-2xl font-bold text-gray-900 dark:text-white">{{ $management }}</div>
                             <div class="text-xs text-gray-500 dark:text-gray-400">Less is better</div>
                         </div>
 
                         <div class="p-3 bg-white dark:bg-gray-800 rounded">
-                            <div class="text-xs text-gray-500 dark:text-gray-400">✅ Utilized (hrs)</div>
+                            <div class="text-xs text-gray-500 dark:text-gray-400">Utilized (hrs)</div>
                             <div class="text-2xl font-bold text-gray-900 dark:text-white">{{ $utilized }}</div>
                             <div class="text-xs text-gray-500 dark:text-gray-400">More is better</div>
                         </div>
 
                         <div class="p-3 bg-white dark:bg-gray-800 rounded">
-                            <div class="text-xs text-gray-500 dark:text-gray-400">❌ Wasted (hrs)</div>
+                            <div class="text-xs text-gray-500 dark:text-gray-400">Wasted (hrs)</div>
                             <div class="text-2xl font-bold text-gray-900 dark:text-white">{{ $wasted }}</div>
                             <div class="text-xs text-gray-500 dark:text-gray-400">Less is better</div>
                         </div>
@@ -104,10 +104,10 @@
                             @endif
                         ">
                             <div class="text-3xl mb-2">
-                                @if($score >= 9) 🌟
-                                @elseif($score >= 7) 😊
-                                @elseif($score >= 5) 😐
-                                @else 😞
+                                @if($score >= 9) 
+                                @elseif($score >= 7)
+                                @elseif($score >= 5)
+                                @else
                                 @endif
                             </div>
                             <div class="font-semibold text-lg dark:text-gray-200">
@@ -153,28 +153,28 @@
                             @endphp
 
                             <div class="flex justify-between items-center p-2 bg-white dark:bg-gray-800 rounded">
-                                <span class="text-sm dark:text-gray-300">😴 Sleep</span>
+                                <span class="text-sm dark:text-gray-300">Sleep</span>
                                 <span class="font-semibold text-green-600 dark:text-green-400">{{ round($sleepFinal, 2) }} / 2.5</span>
                             </div>
 
                             <div class="flex justify-between items-center p-2 bg-white dark:bg-gray-800 rounded">
-                                <span class="text-sm dark:text-gray-300">🎯 Management</span>
+                                <span class="text-sm dark:text-gray-300">Management</span>
                                 <span class="font-semibold text-green-600 dark:text-green-400">{{ round($managementFinal, 2) }} / 1.5</span>
                             </div>
 
                             <div class="flex justify-between items-center p-2 bg-white dark:bg-gray-800 rounded">
-                                <span class="text-sm dark:text-gray-300">✅ Utilized Time</span>
+                                <span class="text-sm dark:text-gray-300">Utilized Time</span>
                                 <span class="font-semibold text-green-600 dark:text-green-400">{{ round($utilizedFinal, 2) }} / 2</span>
                             </div>
 
                             <div class="flex justify-between items-center p-2 bg-white dark:bg-gray-800 rounded">
-                                <span class="text-sm dark:text-gray-300">❌ Wasted Time</span>
+                                <span class="text-sm dark:text-gray-300">Wasted Time</span>
                                 <span class="font-semibold text-green-600 dark:text-green-400">{{ round($wastedFinal, 2) }} / 1</span>
                             </div>
 
                             <div class="border-t-2 border-gray-300 dark:border-gray-600 pt-2 mt-2">
                                 <div class="flex justify-between items-center p-2 bg-purple-100 dark:bg-purple-900/30 rounded font-semibold">
-                                    <span class="dark:text-gray-200">⏰ Time Score</span>
+                                    <span class="dark:text-gray-200">Time Score</span>
                                     <span class="text-purple-600 dark:text-purple-400">{{ round($timeScore, 2) }} / 5</span>
                                 </div>
                             </div>

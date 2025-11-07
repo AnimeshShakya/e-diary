@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\Diary;
+use App\Models\Checklist;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
@@ -112,8 +113,8 @@ class ScoreCalculator extends Component
     {
         // Load checklist data
         $checklistArray = json_decode($diary->checklist_array, true) ?? [];
-        $totalChecklist = count($checklistArray);
-        $completedChecklist = collect($checklistArray)->where('completed', true)->count();
+        $completedChecklist = count($checklistArray);
+        $totalChecklist = Checklist::count();
 
         // Calculate checklist score
         $checklistScore = $totalChecklist > 0
@@ -122,8 +123,11 @@ class ScoreCalculator extends Component
 
         // Sleep score
         $sleep = $diary->sleep ?? 7;
-        if ($sleep >= 6 && $sleep <= 8) {
+        if ($sleep == 7) {
             $sleepScore = 10;
+        }
+        elseif ($sleep == 6 && $sleep == 8) {
+            $sleepScore = 9;
         } elseif ($sleep == 5 || $sleep == 9) {
             $sleepScore = 7;
         } elseif ($sleep == 4 || $sleep == 10) {
@@ -131,25 +135,26 @@ class ScoreCalculator extends Component
         } else {
             $sleepScore = 1;
         }
-        $sleepFinal = ($sleepScore / 10) * 2.5;
+        $sleepFinal = ($sleepScore / 10) * 2;
 
         // Management score
-        $management = $diary->management ?? 1;
+        $management = $diary->management ?? 2;
         $managementScore = max(0, 10 - ($management - 1));
-        $managementFinal = ($managementScore / 10) * 1.5;
+        $managementFinal = ($managementScore / 10) * 1;
 
         // Utilized score
         $utilized = $diary->utilized ?? 16;
         $utilizedScore = min(($utilized / 16) * 10, 10);
-        $utilizedFinal = ($utilizedScore / 10) * 2;
+        $utilizedFinal = ($utilizedScore / 10) * 3;
 
         // Wasted score
         $wasted = $diary->wasted ?? 0;
         $wastedScore = max(0, 10 - $wasted);
-        $wastedFinal = ($wastedScore / 10) * 1;
+        $wastedFinal = ($wastedScore / 10) * 3;
 
         // Total score
         $timeScore = $sleepFinal + $managementFinal + $utilizedFinal + $wastedFinal;
+        $timeScore = ($timeScore / 9) * 5;
 
         return round($checklistScore + $timeScore, 2);
     }

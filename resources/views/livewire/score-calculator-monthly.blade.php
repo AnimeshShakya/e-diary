@@ -1,100 +1,142 @@
-<div class="p-6 bg-white dark:bg-[#1a1a1a] rounded-lg shadow-lg">
-    <h3 class="text-2xl font-bold mb-6 text-gray-800 dark:text-gray-200">📊 Last 30 Days Performance</h3>
+<x-dashboard.card class="hover:border-indigo-500/50">
+    <div class="flex items-center justify-between mb-6">
+        <h3 class="text-lg font-semibold text-gray-200">30-Day Performance Score</h3>
+        <span class="text-sm text-gray-400">Last Month Overview</span>
+    </div>
 
     @if($hasData)
-        <!-- Average Score Display -->
-        <div class="mb-6 p-6 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-lg border-2 border-purple-200 dark:border-purple-700">
-            <div class="text-center">
-                <div class="text-sm text-gray-600 dark:text-gray-400 mb-2">30-Day Average Score</div>
-                <div class="text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600">
-                    {{ $averageScore }}
-                </div>
-                <div class="text-lg text-gray-600 dark:text-gray-400">out of 10</div>
+        <div class="space-y-6">
+            <!-- 30 Day Average Score - Hero Section -->
+            <div class="relative p-8 rounded-xl bg-gradient-to-br from-purple-900/20 to-pink-900/20 border border-purple-500/20 backdrop-blur-sm overflow-hidden">
+                <!-- Animated Background -->
+                <div class="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-pink-500/5 animate-pulse"></div>
                 
-                <!-- Rating Badge -->
-                <div class="mt-4 inline-block px-4 py-2 rounded-full text-sm font-semibold
-                    @if($averageScore >= 9) bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400
-                    @elseif($averageScore >= 7) bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-400
-                    @elseif($averageScore >= 5) bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-400
-                    @else bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-400
-                    @endif
-                ">
-                    @if($averageScore >= 9) Excellent Performance
-                    @elseif($averageScore >= 7) Good Performance
-                    @elseif($averageScore >= 5) Fair Performance
-                    @else Needs Improvement
-                    @endif
-                </div>
-            </div>
-        </div>
+                <div class="relative z-10 text-center">
+                    <div class="text-xs uppercase tracking-widest text-purple-400 mb-4 font-medium">
+                        30-Day Average Score
+                    </div>
 
-        <!-- Daily Scores List -->
-        <div class="space-y-3">
-            <h4 class="font-semibold text-gray-700 dark:text-gray-300 mb-3">Daily Scores:</h4>
-            <div class="grid gap-3 max-h-96 overflow-y-auto">
-                @foreach($monthlyScores as $dayScore)
-                    <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition">
-                        <div>
-                            <div class="font-medium text-gray-900 dark:text-white">{{ $dayScore['fullDate'] }}</div>
-                            <div class="text-sm text-gray-500 dark:text-gray-400">{{ $dayScore['date'] }}</div>
-                        </div>
-                        <div class="flex items-center gap-3">
-                            <!-- Score Badge -->
-                            <span class="px-3 py-1 rounded-full text-sm font-semibold
-                                @if($dayScore['score'] >= 9) bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400
-                                @elseif($dayScore['score'] >= 7) bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-400
-                                @elseif($dayScore['score'] >= 5) bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-400
-                                @else bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-400
-                                @endif
-                            ">
-                                {{ $dayScore['score'] }}
-                            </span>
+                    <div class="flex justify-center items-center mb-4">
+                        <div class="relative">
+                            <!-- Animated Ring -->
+                            <div class="absolute inset-0 rounded-full bg-gradient-to-tr from-purple-500 to-pink-500 animate-spin-slow blur-md opacity-50"></div>
                             
-                            <!-- Emoji -->
-                            <span class="text-2xl">
-                                @if($dayScore['score'] >= 9) 
-                                @elseif($dayScore['score'] >= 7) 
-                                @elseif($dayScore['score'] >= 5) 
-                                @else 
-                                @endif
-                            </span>
+                            <!-- Score Circle -->
+                            <div class="relative w-32 h-32 rounded-full bg-gradient-to-tr from-purple-500 to-pink-500 p-[3px]">
+                                <div class="w-full h-full bg-[#1a1a1a] rounded-full flex items-center justify-center">
+                                    <span class="text-5xl font-bold bg-gradient-to-br from-purple-400 to-pink-400 bg-clip-text text-transparent">
+                                        {{ $averageScore }}
+                                    </span>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                @endforeach
-            </div>
-        </div>
 
-        <!-- Statistics -->
-        <div class="mt-6 grid grid-cols-3 gap-4">
-            <div class="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg text-center">
-                <div class="text-2xl font-bold text-green-600 dark:text-green-400">
-                    {{ collect($monthlyScores)->where('score', '>=', 7)->count() }}
+                    <div class="text-sm text-gray-400 mb-4">Out of 10</div>
+
+                    <!-- Performance Badge -->
+                    <div class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold backdrop-blur-sm
+                        @if($averageScore >= 9) bg-green-500/20 text-green-400 border border-green-500/30
+                        @elseif($averageScore >= 7) bg-blue-500/20 text-blue-400 border border-blue-500/30
+                        @elseif($averageScore >= 5) bg-yellow-500/20 text-yellow-400 border border-yellow-500/30
+                        @else bg-red-500/20 text-red-400 border border-red-500/30
+                        @endif
+                    ">
+                        @if($averageScore >= 9) ⭐ Excellent Performance
+                        @elseif($averageScore >= 7) ✅ Good Progress
+                        @elseif($averageScore >= 5) ⚡ Keep Going
+                        @else ⚠️ Needs Improvement
+                        @endif
+                    </div>
                 </div>
-                <div class="text-sm text-gray-600 dark:text-gray-400">Good Days</div>
             </div>
-            <div class="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-center">
-                <div class="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                    {{ count($monthlyScores) }}
+
+            <!-- Statistics Grid -->
+            <div class="grid grid-cols-3 gap-4">
+                <div class="p-4 rounded-xl bg-gradient-to-br from-green-900/20 to-green-900/10 border border-green-500/20 text-center backdrop-blur-sm">
+                    <div class="text-3xl font-bold text-green-400 mb-1">
+                        {{ collect($monthlyScores)->where('score', '>=', 7)->count() }}
+                    </div>
+                    <div class="text-xs text-gray-400 uppercase tracking-wide">Good Days</div>
                 </div>
-                <div class="text-sm text-gray-600 dark:text-gray-400">Total Entries</div>
+                <div class="p-4 rounded-xl bg-gradient-to-br from-blue-900/20 to-blue-900/10 border border-blue-500/20 text-center backdrop-blur-sm">
+                    <div class="text-3xl font-bold text-blue-400 mb-1">
+                        {{ count($monthlyScores) }}
+                    </div>
+                    <div class="text-xs text-gray-400 uppercase tracking-wide">Total Entries</div>
+                </div>
+                <div class="p-4 rounded-xl bg-gradient-to-br from-purple-900/20 to-purple-900/10 border border-purple-500/20 text-center backdrop-blur-sm">
+                    <div class="text-3xl font-bold text-purple-400 mb-1">
+                        {{ collect($monthlyScores)->max('score') ?? 0 }}
+                    </div>
+                    <div class="text-xs text-gray-400 uppercase tracking-wide">Best Score</div>
+                </div>
             </div>
-            <div class="p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg text-center">
-                <div class="text-2xl font-bold text-purple-600 dark:text-purple-400">
-                    {{ collect($monthlyScores)->max('score') ?? 0 }}
+
+            <!-- Daily Scores List -->
+            <div>
+                <h4 class="text-sm font-semibold text-gray-300 mb-4 flex items-center gap-2 uppercase tracking-wide">
+                    <svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                    </svg>
+                    Daily Scores
+                </h4>
+
+                <div class="space-y-2 max-h-[320px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-900/50">
+                    @foreach($monthlyScores as $dayScore)
+                        <div class="group flex items-center justify-between p-4 rounded-xl bg-gray-900/40 border border-gray-800/50 hover:border-indigo-500/30 hover:bg-gray-900/60 transition-all duration-200">
+                            <!-- Date -->
+                            <div class="flex-1">
+                                <div class="font-semibold text-gray-200 text-sm">{{ $dayScore['fullDate'] }}</div>
+                                <div class="text-xs text-gray-500">{{ $dayScore['date'] }}</div>
+                            </div>
+
+                            <div class="flex items-center gap-3">
+                                <!-- Score Badge -->
+                                <div class="flex flex-col items-end">
+                                    <span class="px-4 py-1.5 rounded-lg min-w-[55px] text-center text-base font-bold backdrop-blur-sm
+                                        @if($dayScore['score'] >= 9) bg-green-500/20 text-green-400 border border-green-500/30
+                                        @elseif($dayScore['score'] >= 7) bg-blue-500/20 text-blue-400 border border-blue-500/30
+                                        @elseif($dayScore['score'] >= 5) bg-yellow-500/20 text-yellow-400 border border-yellow-500/30
+                                        @else bg-red-500/20 text-red-400 border border-red-500/30
+                                        @endif
+                                    ">
+                                        {{ $dayScore['score'] }}
+                                    </span>
+                                </div>
+
+                                <!-- Emoji Mood -->
+                                <span class="text-2xl opacity-70 group-hover:opacity-100 group-hover:scale-110 transition-all duration-200">
+                                    @if($dayScore['score'] >= 9) 😍
+                                    @elseif($dayScore['score'] >= 7) 😊
+                                    @elseif($dayScore['score'] >= 5) 😐
+                                    @else 😞
+                                    @endif
+                                </span>
+                            </div>
+                        </div>
+                    @endforeach
                 </div>
-                <div class="text-sm text-gray-600 dark:text-gray-400">Best Score</div>
             </div>
         </div>
     @else
-        <div class="h-64 flex items-center justify-center p-6 bg-gray-50 dark:bg-gray-900/50 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-700">
-            <div class="text-center text-gray-500 dark:text-gray-400">
-                <div class="text-6xl mb-4">📊</div>
-                <p class="text-lg">No diary entries found in the last 30 days</p>
-                <p class="text-sm mt-2">Start creating diary entries to see your performance!</p>
-                <a href="{{ route('diaries.create') }}" class="mt-4 inline-block px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition">
+        <div class="flex items-center justify-center p-12 rounded-xl bg-gray-900/40 border border-gray-800/50 min-h-[24rem]">
+            <div class="text-center">
+                <div class="w-20 h-20 mx-auto mb-6 rounded-full bg-gray-800/50 flex items-center justify-center">
+                    <svg class="w-10 h-10 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                    </svg>
+                </div>
+                <p class="text-gray-400 text-base mb-2">No diary entries found in the last 30 days</p>
+                <p class="text-gray-500 text-sm mb-6">Start creating diary entries to see your performance!</p>
+                <a href="{{ route('diaries.create') }}" class="inline-flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white rounded-lg font-medium transition-all duration-200 shadow-lg shadow-indigo-500/20">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                    </svg>
                     Create Diary Entry
                 </a>
             </div>
         </div>
     @endif
-</div>
+</x-dashboard.card>
