@@ -17,11 +17,17 @@ class Index extends Component
 
     public string $search = '';
 
+    public string $searchDate = '';
+
     public int $perPage = 10;
 
     public bool $showModal = false;
 
+    public bool $showViewModal = false;
+
     public ?int $editId = null;
+
+    public ?int $viewId = null;
 
     /**
      * @var array{
@@ -63,6 +69,17 @@ class Index extends Component
     public function updatingSearch(): void
     {
         $this->resetPage();
+    }
+
+    public function updatingSearchDate(): void
+    {
+        $this->resetPage();
+    }
+
+    public function view(Diary $diary): void
+    {
+        $this->viewId = $diary->id;
+        $this->showViewModal = true;
     }
 
     public function create(): void
@@ -172,14 +189,20 @@ class Index extends Component
                         ->orWhere('good_memo', 'like', "%{$this->search}%");
                 });
             })
+            ->when($this->searchDate, function ($q) {
+                $q->whereDate('date', $this->searchDate);
+            })
             ->orderByDesc('date')
             ->paginate($this->perPage);
 
         $users = User::select('id', 'name')->orderBy('name')->get();
 
+        $viewDiary = $this->viewId ? Diary::with('user')->find($this->viewId) : null;
+
         return view('livewire.admin.diaries.index', [
             'diaries' => $diaries,
             'users' => $users,
+            'viewDiary' => $viewDiary,
         ]);
     }
 

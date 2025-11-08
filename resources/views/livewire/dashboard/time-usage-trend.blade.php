@@ -1,4 +1,4 @@
-<x-dashboard.card class="hover:border-emerald-500/50">
+<x-dashboard.card wire:init="load" class="hover:border-emerald-500/50">
     <div class="flex items-center justify-between mb-6">
         <h3 class="text-lg font-semibold text-gray-200">Time Usage Trend (Last 60 Days)</h3>
         <span class="text-sm text-gray-400">Hours per Day</span>
@@ -14,16 +14,16 @@
             <canvas id="timeUsageTrendChart"></canvas>
         </div>
 
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                const el = document.getElementById('timeUsageTrendChart');
-                if (!el) return;
-                if (el.dataset.rendered) return;
-                el.dataset.rendered = '1';
+            (function(){
+                const init = function () {
+                    const el = document.getElementById('timeUsageTrendChart');
+                    if (!el) return;
+                    if (el.dataset.rendered) return;
+                    el.dataset.rendered = '1';
 
-                const ctx = el.getContext('2d');
-                new Chart(ctx, {
+                    const ctx = el.getContext('2d');
+                    new Chart(ctx, {
                     type: 'line',
                     data: {
                         labels: @json($labels),
@@ -111,8 +111,18 @@
                         },
                         animation: { duration: 800, easing: 'easeOutQuart' }
                     }
-                });
-            });
+                    });
+                };
+
+                if (window.Chart) {
+                    init();
+                } else {
+                    const s = document.createElement('script');
+                    s.src = 'https://cdn.jsdelivr.net/npm/chart.js';
+                    s.onload = init;
+                    document.head.appendChild(s);
+                }
+            })();
         </script>
     @else
         <div class="text-center py-12">

@@ -1,11 +1,17 @@
 <div class="space-y-6 animate-fade-in-up">
     <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div class="flex items-center gap-3">
+        <div class="flex items-center gap-3 flex-wrap">
             <input
                 type="text"
                 wire:model.live.debounce.300ms="search"
                 placeholder="Search diaries..."
-                class="w-72 rounded-xl border-gray-800 bg-gray-900/40 text-gray-200 placeholder-gray-500 focus:border-indigo-500 focus:ring-indigo-500"
+                class="w-64 rounded-xl border-gray-800 bg-gray-900/40 text-gray-200 placeholder-gray-500 focus:border-indigo-500 focus:ring-indigo-500"
+            />
+            <input
+                type="date"
+                wire:model.live="searchDate"
+                placeholder="Filter by date..."
+                class="rounded-xl border-gray-800 bg-gray-900/40 text-gray-200 placeholder-gray-500 focus:border-indigo-500 focus:ring-indigo-500"
             />
         </div>
         <div class="flex items-center gap-3">
@@ -42,6 +48,7 @@
                         </td>
                         <td class="px-4 py-3">
                             <div class="flex items-center justify-end gap-2">
+                                <button wire:click="view({{ $diary->id }})" class="px-3 py-1.5 rounded-lg bg-blue-600/80 hover:bg-blue-600 text-white text-sm">View</button>
                                 <a href="{{ route('admin.diaries.edit', $diary) }}" class="px-3 py-1.5 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-200 text-sm">Edit</a>
                             </div>
                         </td>
@@ -57,6 +64,113 @@
             {{ $diaries->links() }}
         </div>
     </div>
+
+    <!-- View Modal -->
+    @if($viewDiary)
+        <div x-data="{ open: @entangle('showViewModal') }">
+            <div
+                x-cloak
+                x-show="open"
+                class="fixed inset-0 z-[60] flex items-center justify-center overflow-y-auto"
+            >
+                <div class="absolute inset-0 bg-black/60" @click="open = false"></div>
+                <div class="relative w-full max-w-3xl rounded-2xl border border-gray-800/60 bg-[#111111] p-6 shadow-2xl m-4 max-h-[90vh] overflow-y-auto">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-xl font-semibold text-gray-200">View Diary</h2>
+                        <button @click="open = false" class="text-gray-400 hover:text-gray-200">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm text-gray-400 mb-1">User</label>
+                                <p class="text-gray-200">{{ $viewDiary->user->name ?? '—' }}</p>
+                            </div>
+                            <div>
+                                <label class="block text-sm text-gray-400 mb-1">Date</label>
+                                <p class="text-gray-200">{{ \Illuminate\Support\Carbon::parse($viewDiary->date)->toFormattedDateString() }}</p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm text-gray-400 mb-1">Yesterday Sleep Time</label>
+                                <p class="text-gray-200">{{ $viewDiary->yesterday_sleep_time }}</p>
+                            </div>
+                            <div>
+                                <label class="block text-sm text-gray-400 mb-1">Today Wake Time</label>
+                                <p class="text-gray-200">{{ $viewDiary->today_wake_time }}</p>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-1">Diary Text</label>
+                            <p class="text-gray-200 whitespace-pre-wrap">{{ $viewDiary->text }}</p>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm text-gray-400 mb-1">Urgent & Important</label>
+                                <p class="text-gray-200 whitespace-pre-wrap">{{ $viewDiary->urgent_important }}</p>
+                            </div>
+                            <div>
+                                <label class="block text-sm text-gray-400 mb-1">Urgent & Not Important</label>
+                                <p class="text-gray-200 whitespace-pre-wrap">{{ $viewDiary->urgent_notimportant }}</p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm text-gray-400 mb-1">Not Urgent & Important</label>
+                                <p class="text-gray-200 whitespace-pre-wrap">{{ $viewDiary->noturgent_important }}</p>
+                            </div>
+                            <div>
+                                <label class="block text-sm text-gray-400 mb-1">Not Urgent & Not Important</label>
+                                <p class="text-gray-200 whitespace-pre-wrap">{{ $viewDiary->noturgent_notimportant }}</p>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-1">Good Memo</label>
+                            <p class="text-gray-200 whitespace-pre-wrap">{{ $viewDiary->good_memo }}</p>
+                        </div>
+
+                        <div class="grid grid-cols-4 gap-4">
+                            <div>
+                                <label class="block text-sm text-gray-400 mb-1">Sleep Hours</label>
+                                <p class="text-gray-200">{{ $viewDiary->sleep }}</p>
+                            </div>
+                            <div>
+                                <label class="block text-sm text-gray-400 mb-1">Management Hours</label>
+                                <p class="text-gray-200">{{ $viewDiary->management }}</p>
+                            </div>
+                            <div>
+                                <label class="block text-sm text-gray-400 mb-1">Utilized Hours</label>
+                                <p class="text-gray-200">{{ $viewDiary->utilized }}</p>
+                            </div>
+                            <div>
+                                <label class="block text-sm text-gray-400 mb-1">Wasted Hours</label>
+                                <p class="text-gray-200">{{ $viewDiary->wasted }}</p>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-1">Checklists</label>
+                            <p class="text-gray-200">{{ $viewDiary->checklist_array }}</p>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 flex items-center justify-end">
+                        <button @click="open = false" class="px-4 py-2 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-200">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
 
     <!-- Modal removed: editing now happens on dedicated page -->
 </div>

@@ -18,6 +18,12 @@ class Index extends Component
 
     public string $search = '';
 
+    public string $searchEmail = '';
+
+    public string $searchRole = '';
+
+    public string $searchStatus = '';
+
     public int $perPage = 10;
 
     public bool $showModal = false;
@@ -35,6 +41,21 @@ class Index extends Component
     ];
 
     public function updatingSearch(): void
+    {
+        $this->resetPage();
+    }
+
+    public function updatingSearchEmail(): void
+    {
+        $this->resetPage();
+    }
+
+    public function updatingSearchRole(): void
+    {
+        $this->resetPage();
+    }
+
+    public function updatingSearchStatus(): void
     {
         $this->resetPage();
     }
@@ -136,6 +157,19 @@ class Index extends Component
                     $qq->where('name', 'like', "%{$this->search}%")
                         ->orWhere('email', 'like', "%{$this->search}%");
                 });
+            })
+            ->when($this->searchEmail, function ($q) {
+                $q->where('email', 'like', "%{$this->searchEmail}%");
+            })
+            ->when($this->searchRole, function ($q) {
+                $q->where('role', $this->searchRole);
+            })
+            ->when($this->searchStatus, function ($q) {
+                if ($this->searchStatus === 'active') {
+                    $q->where('is_active', true);
+                } elseif ($this->searchStatus === 'inactive') {
+                    $q->where('is_active', false);
+                }
             })
             ->orderByDesc('created_at')
             ->paginate($this->perPage);

@@ -1,12 +1,35 @@
 <div class="space-y-6 animate-fade-in-up">
     <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div class="flex items-center gap-3">
+        <div class="flex items-center gap-3 flex-wrap">
             <input
                 type="text"
                 wire:model.live.debounce.300ms="search"
-                placeholder="Search users..."
-                class="w-72 rounded-xl border-gray-800 bg-gray-900/40 text-gray-200 placeholder-gray-500 focus:border-indigo-500 focus:ring-indigo-500"
+                placeholder="Search name or email..."
+                class="w-64 rounded-xl border-gray-800 bg-gray-900/40 text-gray-200 placeholder-gray-500 focus:border-indigo-500 focus:ring-indigo-500"
             />
+            <input
+                type="text"
+                wire:model.live.debounce.300ms="searchEmail"
+                placeholder="Filter by email..."
+                class="w-48 rounded-xl border-gray-800 bg-gray-900/40 text-gray-200 placeholder-gray-500 focus:border-indigo-500 focus:ring-indigo-500"
+            />
+            <select
+                wire:model.live="searchRole"
+                class="rounded-xl border-gray-800 bg-gray-900/40 text-gray-200 focus:border-indigo-500 focus:ring-indigo-500"
+            >
+                <option value="">All Roles</option>
+                <option value="user">User</option>
+                <option value="admin">Admin</option>
+                <option value="super_admin">Super Admin</option>
+            </select>
+            <select
+                wire:model.live="searchStatus"
+                class="rounded-xl border-gray-800 bg-gray-900/40 text-gray-200 focus:border-indigo-500 focus:ring-indigo-500"
+            >
+                <option value="">All Status</option>
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+            </select>
         </div>
         <div class="flex items-center gap-3">
             <a href="{{ route('admin.users.create') }}" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-medium shadow-lg shadow-indigo-600/20">

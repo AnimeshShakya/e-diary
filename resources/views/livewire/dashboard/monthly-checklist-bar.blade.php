@@ -1,4 +1,4 @@
-<x-dashboard.card class="hover:border-indigo-500/50">
+<x-dashboard.card wire:init="load" class="hover:border-indigo-500/50">
     <div class="flex items-center justify-between mb-6">
         <h3 class="text-lg font-semibold text-gray-200">Monthly Checklist (Last 30 Days)</h3>
         <span class="text-sm text-gray-400">Progress Overview</span>
@@ -15,11 +15,13 @@
                 <canvas id="monthlyChecklistChart"></canvas>
             </div>
 
-            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
             <script>
-                document.addEventListener('DOMContentLoaded', function () {
-                    const ctx = document.getElementById('monthlyChecklistChart').getContext('2d');
-                    new Chart(ctx, {
+                (function(){
+                    const init = function () {
+                        const el = document.getElementById('monthlyChecklistChart');
+                        if (!el) return;
+                        const ctx = el.getContext('2d');
+                        new Chart(ctx, {
                         type: 'bar',
                         data: {
                             labels: @json($labels),
@@ -71,8 +73,18 @@
                                 easing: 'easeOutQuart'
                             }
                         }
-                    });
-                });
+                        });
+                    };
+
+                    if (window.Chart) {
+                        init();
+                    } else {
+                        const s = document.createElement('script');
+                        s.src = 'https://cdn.jsdelivr.net/npm/chart.js';
+                        s.onload = init;
+                        document.head.appendChild(s);
+                    }
+                })();
             </script>
         @else
             <div class="text-center py-12">

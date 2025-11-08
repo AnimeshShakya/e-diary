@@ -1,7 +1,7 @@
-<x-dashboard.card class="hover:border-indigo-500/50">
+<x-dashboard.card wire:init="load" class="hover:border-indigo-500/50">
     <div class="flex items-center justify-between mb-6">
-        <h3 class="text-lg font-semibold text-gray-200">30-Day Performance Score</h3>
-        <span class="text-sm text-gray-400">Last Month Overview</span>
+        <h3 class="text-lg font-semibold text-gray-200">7-Day Performance Score</h3>
+        <span class="text-sm text-gray-400">Last Week Overview</span>
     </div>
 
     @if($hasData)
@@ -13,7 +13,7 @@
                 
                 <div class="relative z-10 text-center">
                     <div class="text-xs uppercase tracking-widest text-purple-400 mb-4 font-medium">
-                        30-Day Average Score
+                        7-Day Average Score
                     </div>
 
                     <div class="flex justify-center items-center mb-4">
@@ -107,10 +107,10 @@
 
                                 <!-- Emoji Mood -->
                                 <span class="text-2xl opacity-70 group-hover:opacity-100 group-hover:scale-110 transition-all duration-200">
-                                    @if($dayScore['score'] >= 9) 😍
-                                    @elseif($dayScore['score'] >= 7) 😊
-                                    @elseif($dayScore['score'] >= 5) 😐
-                                    @else 😞
+                                    @if($dayScore['score'] >= 9) 
+                                    @elseif($dayScore['score'] >= 7) 
+                                    @elseif($dayScore['score'] >= 5) 
+                                    @else 
                                     @endif
                                 </span>
                             </div>
@@ -120,7 +120,7 @@
             </div>
         </div>
     @else
-        <div class="flex items-center justify-center p-12 rounded-xl bg-gray-900/40 border border-gray-800/50 min-h-[24rem]">
+                        <div class="flex items-center justify-center p-12 rounded-xl bg-gray-900/40 border border-gray-800/50 min-h-[24rem]">
             <div class="text-center">
                 <div class="w-20 h-20 mx-auto mb-6 rounded-full bg-gray-800/50 flex items-center justify-center">
                     <svg class="w-10 h-10 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -128,7 +128,7 @@
                             d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
                     </svg>
                 </div>
-                <p class="text-gray-400 text-base mb-2">No diary entries found in the last 30 days</p>
+                <p class="text-gray-400 text-base mb-2">No diary entries found in the last 7 days</p>
                 <p class="text-gray-500 text-sm mb-6">Start creating diary entries to see your performance!</p>
                 <a href="{{ route('diaries.create') }}" class="inline-flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white rounded-lg font-medium transition-all duration-200 shadow-lg shadow-indigo-500/20">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

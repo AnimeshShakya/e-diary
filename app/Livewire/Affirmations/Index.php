@@ -13,11 +13,42 @@ class Index extends Component
 {
     public ?Affirmation $affirmation = null;
 
+    public string $timeOfDay = '';
+
+    public string $currentAffirmation = '';
+
     public function mount(): void
     {
         $this->affirmation = Affirmation::query()
             ->where('user_id', Auth::id())
             ->first();
+
+        $this->determineTimeOfDay();
+        $this->setCurrentAffirmation();
+    }
+
+    protected function determineTimeOfDay(): void
+    {
+        $hour = now()->hour;
+
+        // Morning: 5 AM to 11:59 AM
+        // Night: 12 PM (noon) to 4:59 AM next day
+        if ($hour >= 5 && $hour < 12) {
+            $this->timeOfDay = 'morning';
+        } else {
+            $this->timeOfDay = 'night';
+        }
+    }
+
+    protected function setCurrentAffirmation(): void
+    {
+        if ($this->affirmation) {
+            if ($this->timeOfDay === 'morning') {
+                $this->currentAffirmation = $this->affirmation->morning_affirmation ?? '';
+            } else {
+                $this->currentAffirmation = $this->affirmation->night_affirmation ?? '';
+            }
+        }
     }
 
     public function delete(int $affirmationId): mixed

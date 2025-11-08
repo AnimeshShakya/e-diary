@@ -17,6 +17,12 @@ class TimeUsageTrend extends Component
 
     public function mount(): void
     {
+        // defer expensive aggregation until the client requests it
+    }
+
+    // called by the frontend via wire:init to avoid blocking initial render
+    public function load(): void
+    {
         $this->loadData();
     }
 

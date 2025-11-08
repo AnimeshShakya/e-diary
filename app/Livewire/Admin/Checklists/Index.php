@@ -16,16 +16,36 @@ class Index extends Component
 
     public string $search = '';
 
+    public bool $showDeleteModal = false;
+
+    public ?int $deleteId = null;
+
     public function updatingSearch(): void
     {
         $this->resetPage();
     }
 
-    public function delete(int $id): void
+    public function confirmDelete(int $id): void
     {
-        Checklist::query()->whereKey($id)->delete();
-        session()->flash('status', 'Checklist deleted');
-        $this->resetPage();
+        $this->deleteId = $id;
+        $this->showDeleteModal = true;
+    }
+
+    public function delete(): void
+    {
+        if ($this->deleteId) {
+            Checklist::query()->whereKey($this->deleteId)->delete();
+            session()->flash('status', 'Checklist deleted');
+            $this->deleteId = null;
+            $this->showDeleteModal = false;
+            $this->resetPage();
+        }
+    }
+
+    public function cancelDelete(): void
+    {
+        $this->deleteId = null;
+        $this->showDeleteModal = false;
     }
 
     protected function getChecklists(): LengthAwarePaginator

@@ -18,6 +18,12 @@ class MonthlyChecklistBar extends Component
 
     public function mount(): void
     {
+        // defer loading until frontend initializes to improve initial page render
+    }
+
+    // public loader invoked by the frontend via wire:init
+    public function load(): void
+    {
         $this->loadData();
     }
 

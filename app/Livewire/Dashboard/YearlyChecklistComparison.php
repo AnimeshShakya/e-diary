@@ -17,6 +17,12 @@ class YearlyChecklistComparison extends Component
 
     public function mount(): void
     {
+        // defer heavy aggregation to frontend initialization for snappy loads
+    }
+
+    // called by the frontend via wire:init
+    public function load(): void
+    {
         $this->loadData();
     }
 

@@ -1,4 +1,4 @@
-<x-dashboard.card class="hover:border-purple-500/50">
+<x-dashboard.card wire:init="load" class="hover:border-purple-500/50">
     <div class="flex items-center justify-between mb-6">
         <h3 class="text-lg font-semibold text-gray-200">Yearly Checklist Comparison</h3>
         <span class="text-sm text-gray-400">Completion Rate (%)</span>
@@ -15,77 +15,92 @@
                 <canvas id="yearlyChecklistChart"></canvas>
             </div>
 
-            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
             <script>
-                document.addEventListener('DOMContentLoaded', function () {
-                    const ctx = document.getElementById('yearlyChecklistChart').getContext('2d');
-                    const chart = new Chart(ctx, {
-                        type: 'bar',
-                        data: {
-                            labels: @json($months),
-                            datasets: @json($datasets)
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            interaction: {
-                                mode: 'index',
-                                intersect: false,
+                (function(){
+                    const init = function () {
+                        const el = document.getElementById('yearlyChecklistChart');
+                        if (!el) return;
+                        if (el.dataset.rendered) return;
+                        el.dataset.rendered = '1';
+
+                        const ctx = el.getContext('2d');
+                        new Chart(ctx, {
+                            type: 'bar',
+                            data: {
+                                labels: @json($months),
+                                datasets: @json($datasets)
                             },
-                            scales: {
-                                x: {
-                                    grid: { display: false },
-                                    ticks: {
-                                        color: '#a1a1aa',
-                                        font: { size: 12, weight: '500' },
-                                        padding: 8
-                                    }
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                interaction: {
+                                    mode: 'index',
+                                    intersect: false,
                                 },
-                                y: {
-                                    beginAtZero: true,
-                                    grid: { color: 'rgba(255,255,255,0.05)' },
-                                    ticks: {
-                                        color: '#71717a',
-                                        stepSize: 20,
-                                        font: { size: 11 },
-                                        callback: function(value) {
-                                            return value + '%';
+                                scales: {
+                                    x: {
+                                        grid: { display: false },
+                                        ticks: {
+                                            color: '#a1a1aa',
+                                            font: { size: 12, weight: '500' },
+                                            padding: 8
                                         }
                                     },
-                                    suggestedMax: 100
-                                }
-                            },
-                            plugins: {
-                                legend: {
-                                    labels: {
-                                        color: '#e5e7eb',
-                                        font: { size: 13, weight: '500' },
-                                        usePointStyle: true,
-                                        padding: 20
+                                    y: {
+                                        beginAtZero: true,
+                                        grid: { color: 'rgba(255,255,255,0.05)' },
+                                        ticks: {
+                                            color: '#71717a',
+                                            stepSize: 20,
+                                            font: { size: 11 },
+                                            callback: function(value) {
+                                                return value + '%';
+                                            }
+                                        },
+                                        suggestedMax: 100
                                     }
                                 },
-                                tooltip: {
-                                    backgroundColor: '#1f2937',
-                                    titleColor: '#f9fafb',
-                                    bodyColor: '#d1d5db',
-                                    borderWidth: 1,
-                                    borderColor: 'rgba(255,255,255,0.1)',
-                                    cornerRadius: 8,
-                                    padding: 10,
-                                    callbacks: {
-                                        label: function(context) {
-                                            return context.dataset.label + ': ' + context.parsed.y + '%';
+                                plugins: {
+                                    legend: {
+                                        labels: {
+                                            color: '#e5e7eb',
+                                            font: { size: 13, weight: '500' },
+                                            usePointStyle: true,
+                                            padding: 20
+                                        }
+                                    },
+                                    tooltip: {
+                                        backgroundColor: '#1f2937',
+                                        titleColor: '#f9fafb',
+                                        bodyColor: '#d1d5db',
+                                        borderWidth: 1,
+                                        borderColor: 'rgba(255,255,255,0.1)',
+                                        cornerRadius: 8,
+                                        padding: 10,
+                                        callbacks: {
+                                            label: function(context) {
+                                                return context.dataset.label + ': ' + context.parsed.y + '%';
+                                            }
                                         }
                                     }
+                                },
+                                animation: {
+                                    duration: 900,
+                                    easing: 'easeOutQuart'
                                 }
-                            },
-                            animation: {
-                                duration: 900,
-                                easing: 'easeOutQuart'
                             }
-                        }
-                    });
-                });
+                        });
+                    };
+
+                    if (window.Chart) {
+                        init();
+                    } else {
+                        const s = document.createElement('script');
+                        s.src = 'https://cdn.jsdelivr.net/npm/chart.js';
+                        s.onload = init;
+                        document.head.appendChild(s);
+                    }
+                })();
             </script>
         @else
             <div class="text-center py-12">

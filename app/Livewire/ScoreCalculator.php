@@ -2,8 +2,8 @@
 
 namespace App\Livewire;
 
-use App\Models\Diary;
 use App\Models\Checklist;
+use App\Models\Diary;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
@@ -38,8 +38,14 @@ class ScoreCalculator extends Component
     {
         $this->mode = $mode;
         $this->selectedDate = $date ?? Carbon::today()->format('Y-m-d');
+        // Defer loading heavy diary queries until the frontend triggers it
+        // via wire:init. This keeps initial navigation fast.
+    }
 
-        if ($mode === 'monthly') {
+    // Called from Blade via wire:init to populate state after initial render
+    public function load(): void
+    {
+        if ($this->mode === 'monthly') {
             $this->loadMonthlyData();
         } else {
             $this->loadDiaryData();
@@ -53,7 +59,7 @@ class ScoreCalculator extends Component
 
     public function loadMonthlyData()
     {
-        $startDate = Carbon::now()->subDays(30);
+        $startDate = Carbon::now()->subDays(7);
         $endDate = Carbon::now();
 
         $diaries = Diary::where('user_id', Auth::id())
@@ -98,11 +104,12 @@ class ScoreCalculator extends Component
 
             // Load checklist data
             $checklistArray = json_decode($diary->checklist_array, true) ?? [];
-            $this->totalChecklist = count($checklistArray);
-            $this->completedChecklist = collect($checklistArray)->where('completed', true)->count();
+            $this->totalChecklist = Checklist::count();
+            $this->completedChecklist = count($checklistArray);
 
             // Auto-calculate score when data is loaded
-            $this->calculateScore();
+            $daily_score = $this->calculateScore();
+            $this->score = $daily_score;
         } else {
             $this->hasData = false;
             $this->resetData();
@@ -125,8 +132,7 @@ class ScoreCalculator extends Component
         $sleep = $diary->sleep ?? 7;
         if ($sleep == 7) {
             $sleepScore = 10;
-        }
-        elseif ($sleep == 6 && $sleep == 8) {
+        } elseif ($sleep == 6 && $sleep == 8) {
             $sleepScore = 9;
         } elseif ($sleep == 5 || $sleep == 9) {
             $sleepScore = 7;
@@ -168,44 +174,6 @@ class ScoreCalculator extends Component
         $this->utilized = 16;
         $this->wasted = 0;
         $this->score = 0;
-    }
-
-    public function calculateScore()
-    {
-        // -------- CHECKLIST (50%) --------
-        $checklistScore = $this->totalChecklist > 0
-            ? ($this->completedChecklist / $this->totalChecklist) * 5
-            : 0;
-
-        // -------- SLEEP SCORE --------
-        if ($this->sleep >= 6 && $this->sleep <= 8) {
-            $sleepScore = 10;
-        } elseif ($this->sleep == 5 || $this->sleep == 9) {
-            $sleepScore = 7;
-        } elseif ($this->sleep == 4 || $this->sleep == 10) {
-            $sleepScore = 4;
-        } else {
-            $sleepScore = 1;
-        }
-        $sleepFinal = ($sleepScore / 10) * 2.5;
-
-        // -------- MANAGEMENT SCORE (low is better) --------
-        $managementScore = max(0, 10 - ($this->management - 1));
-        $managementFinal = ($managementScore / 10) * 1.5;
-
-        // -------- UTILIZED SCORE (high is better) --------
-        $utilizedScore = min(($this->utilized / 16) * 10, 10);
-        $utilizedFinal = ($utilizedScore / 10) * 2;
-
-        // -------- WASTED SCORE (low is better) --------
-        $wastedScore = max(0, 10 - $this->wasted);
-        $wastedFinal = ($wastedScore / 10) * 1;
-
-        // -------- TOTAL TIME SCORE (50%) --------
-        $timeScore = $sleepFinal + $managementFinal + $utilizedFinal + $wastedFinal;
-
-        // -------- FINAL SCORE out of 10 --------
-        $this->score = round($checklistScore + $timeScore, 2);
     }
 
     public function render()
