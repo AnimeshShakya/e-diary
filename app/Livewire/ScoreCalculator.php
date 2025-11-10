@@ -6,8 +6,11 @@ use App\Models\Checklist;
 use App\Models\Diary;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
+use App\Services\ScoreService;
 
+#[Layout('layouts.admin')]
 class ScoreCalculator extends Component
 {
     public $selectedDate;
@@ -34,6 +37,8 @@ class ScoreCalculator extends Component
 
     public $averageScore = 0;
 
+    protected $queryString = ['selectedDate' => ['as' => 'date']];
+
     public function mount($mode = 'single', $date = null)
     {
         $this->mode = $mode;
@@ -59,9 +64,44 @@ class ScoreCalculator extends Component
 
     public function loadMonthlyData()
     {
-        $startDate = Carbon::now()->subDays(7);
-        $endDate = Carbon::now();
+        // Prefer precomputed DailyScore records if available for faster loads
+        $startDate = Carbon::now()->subDays(7)->toDateString();
+        $endDate = Carbon::now()->toDateString();
 
+        // If the daily_scores table exists, query it. Otherwise fallback to diaries.
+        try {
+            if (\Illuminate\Support\Facades\Schema::hasTable('daily_scores')) {
+                $rows = \App\Models\DailyScore::query()
+                    ->where('user_id', Auth::id())
+                    ->whereBetween('date', [$startDate, $endDate])
+                    ->orderBy('date', 'desc')
+                    ->get();
+
+                $this->monthlyScores = [];
+                $totalScore = 0;
+
+                foreach ($rows as $r) {
+                    $this->monthlyScores[] = [
+                        'date' => Carbon::parse($r->date)->format('M d'),
+                        'fullDate' => Carbon::parse($r->date)->format('F d, Y'),
+                        'score' => $r->score,
+                    ];
+                    $totalScore += $r->score;
+                }
+
+                $this->averageScore = count($this->monthlyScores) > 0
+                    ? round($totalScore / count($this->monthlyScores), 2)
+                    : 0;
+
+                $this->hasData = count($this->monthlyScores) > 0;
+
+                return;
+            }
+        } catch (\Throwable $e) {
+            // If anything goes wrong querying the table, fall back to diary-based compute
+        }
+
+        // Fallback: compute from diaries directly
         $diaries = Diary::where('user_id', Auth::id())
             ->whereBetween('date', [$startDate, $endDate])
             ->orderBy('date', 'desc')
@@ -104,12 +144,11 @@ class ScoreCalculator extends Component
 
             // Load checklist data
             $checklistArray = json_decode($diary->checklist_array, true) ?? [];
-            $this->totalChecklist = Checklist::count();
+            $this->totalChecklist = Checklist::query()->count();
             $this->completedChecklist = count($checklistArray);
 
             // Auto-calculate score when data is loaded
-            $daily_score = $this->calculateScore();
-            $this->score = $daily_score;
+            $this->score = ScoreService::calculateFromDiary($diary);
         } else {
             $this->hasData = false;
             $this->resetData();
@@ -118,51 +157,7 @@ class ScoreCalculator extends Component
 
     private function calculateDiaryScore($diary)
     {
-        // Load checklist data
-        $checklistArray = json_decode($diary->checklist_array, true) ?? [];
-        $completedChecklist = count($checklistArray);
-        $totalChecklist = Checklist::count();
-
-        // Calculate checklist score
-        $checklistScore = $totalChecklist > 0
-            ? ($completedChecklist / $totalChecklist) * 5
-            : 0;
-
-        // Sleep score
-        $sleep = $diary->sleep ?? 7;
-        if ($sleep == 7) {
-            $sleepScore = 10;
-        } elseif ($sleep == 6 && $sleep == 8) {
-            $sleepScore = 9;
-        } elseif ($sleep == 5 || $sleep == 9) {
-            $sleepScore = 7;
-        } elseif ($sleep == 4 || $sleep == 10) {
-            $sleepScore = 4;
-        } else {
-            $sleepScore = 1;
-        }
-        $sleepFinal = ($sleepScore / 10) * 2;
-
-        // Management score
-        $management = $diary->management ?? 2;
-        $managementScore = max(0, 10 - ($management - 1));
-        $managementFinal = ($managementScore / 10) * 1;
-
-        // Utilized score
-        $utilized = $diary->utilized ?? 16;
-        $utilizedScore = min(($utilized / 16) * 10, 10);
-        $utilizedFinal = ($utilizedScore / 10) * 3;
-
-        // Wasted score
-        $wasted = $diary->wasted ?? 0;
-        $wastedScore = max(0, 10 - $wasted);
-        $wastedFinal = ($wastedScore / 10) * 3;
-
-        // Total score
-        $timeScore = $sleepFinal + $managementFinal + $utilizedFinal + $wastedFinal;
-        $timeScore = ($timeScore / 9) * 5;
-
-        return round($checklistScore + $timeScore, 2);
+        return ScoreService::calculateFromDiary($diary);
     }
 
     public function resetData()

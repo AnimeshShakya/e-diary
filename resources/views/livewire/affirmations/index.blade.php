@@ -1,13 +1,13 @@
-<div class="space-y-6 animate-fade-in-up">
-    <!-- Time of Day Banner -->
-    <div class="p-6 rounded-2xl border border-gray-800/60 bg-gradient-to-br from-indigo-900/20 to-purple-900/20">
+<div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 space-y-6">
+    <!-- Header -->
+    <div class="flex items-center justify-between">
         <div class="flex items-center gap-3">
             @if ($timeOfDay === 'morning')
                 <svg class="w-8 h-8 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
                 </svg>
                 <div>
-                    <h2 class="text-2xl font-bold text-gray-200">Good Morning! ☀️</h2>
+                    <h2 class="text-xl font-semibold text-gray-200">Good Morning! ☀️</h2>
                     <p class="text-sm text-gray-400">Here's your morning affirmation</p>
                 </div>
             @else
@@ -15,14 +15,15 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
                 </svg>
                 <div>
-                    <h2 class="text-2xl font-bold text-gray-200">Good Evening! 🌙</h2>
+                    <h2 class="text-xl font-semibold text-gray-200">Good Evening! 🌙</h2>
                     <p class="text-sm text-gray-400">Here's your night affirmation</p>
                 </div>
             @endif
         </div>
     </div>
 
-    <div class="overflow-hidden rounded-2xl border border-gray-800/60 bg-gray-900/30">
+    <!-- Content -->
+    <div class="bg-white/5 rounded-xl border border-gray-800">
         <div class="p-6">
             @if (session('status'))
                 <div class="mb-4 text-sm text-green-400">{{ session('status') }}</div>
@@ -69,7 +70,7 @@
             @else
                 <div class="text-center py-12">
                     <div class="text-6xl mb-4">✨</div>
-                    <div class="text-gray-300 mb-2">You don't have an affirmation yet.</div>
+                    <div class="text-gray-400 mb-2">You don't have an affirmation yet.</div>
                     <p class="text-sm text-gray-400 mb-6">Create your morning and night affirmations to stay motivated!</p>
                     <a href="{{ route('affirmations.create') }}" class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-medium">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

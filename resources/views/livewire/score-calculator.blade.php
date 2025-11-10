@@ -1,9 +1,12 @@
-<div class="max-w-4xl mx-auto p-6 bg-white dark:bg-[#1a1a1a] rounded-lg shadow-lg">
+<div class="max-w-4xl mx-auto p-6 bg-white dark:bg-[#1a1a1a] rounded-lg shadow-lg" wire:init="load">
     <h2 class="text-3xl font-bold mb-6 text-center text-gray-800 dark:text-gray-200">Daily Productivity Score Calculator</h2>
 
     <!-- Date Selector -->
     <div class="mb-6">
-        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Select Date:</label>
+        <h2 class="text-1xl font-bold mb-6 text-center text-gray-800 dark:text-gray-200">
+            Selected Date: {{ $selectedDate ? \Carbon\Carbon::parse($selectedDate)->format('Y-m-d') : 'None' }}
+        </h2>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Change Date:</label>
         <input 
             type="date" 
             wire:model.live="selectedDate" 
@@ -50,6 +53,25 @@
                     @endif
                 </div>
 
+                <!-- Time Management Score -->
+                @php
+                    if ($sleep >= 6 && $sleep <= 8) $sleepScore = 10;
+                    elseif ($sleep == 5 || $sleep == 9) $sleepScore = 7;
+                    elseif ($sleep == 4 || $sleep == 10) $sleepScore = 4;
+                    else $sleepScore = 1;
+                    $sleepFinal = ($sleepScore / 10) * 2.5;
+                    
+                    $managementScore = max(0, 10 - ($management - 1));
+                    $managementFinal = ($managementScore / 10) * 1.5;
+                    
+                    $utilizedScore = min(($utilized / 16) * 10, 10);
+                    $utilizedFinal = ($utilizedScore / 10) * 2;
+                    
+                    $wastedScore = max(0, 10 - $wasted);
+                    $wastedFinal = ($wastedScore / 10) * 1;
+                    
+                    $timeScore = $sleepFinal + $managementFinal + $utilizedFinal + $wastedFinal;
+                @endphp
                 <!-- Time Management Section -->
                 <div class="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
                     <h3 class="text-lg font-semibold mb-3 text-green-800 dark:text-green-400">⏰ Time Management (50%)</h3>
@@ -79,6 +101,20 @@
                             <div class="text-xs text-gray-500 dark:text-gray-400">Less is better</div>
                         </div>
                     </div>
+                    @if($timeScore > 0)
+                        <div class="mt-3 p-3 bg-white dark:bg-gray-800 rounded">
+                            <div class="text-sm text-gray-600 dark:text-gray-400 mb-1">Score Rate</div>
+                            <div class="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                                {{ round($timeScore * 10 , 2) }}%
+                            </div>
+                            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 mt-2">
+                                <div 
+                                    class="bg-blue-600 dark:bg-blue-400 h-2 rounded-full transition-all duration-500"
+                                    style="width: {{ $timeScore * 10 }}%"
+                                ></div>
+                            </div>
+                        </div>
+                    @endif
                 </div>
             </div>
 
@@ -132,25 +168,6 @@
                                 <span class="font-semibold text-blue-600 dark:text-blue-400">{{ round($checklistScore, 2) }} / 5</span>
                             </div>
 
-                            <!-- Time Management Score -->
-                            @php
-                                if ($sleep >= 6 && $sleep <= 8) $sleepScore = 10;
-                                elseif ($sleep == 5 || $sleep == 9) $sleepScore = 7;
-                                elseif ($sleep == 4 || $sleep == 10) $sleepScore = 4;
-                                else $sleepScore = 1;
-                                $sleepFinal = ($sleepScore / 10) * 2.5;
-                                
-                                $managementScore = max(0, 10 - ($management - 1));
-                                $managementFinal = ($managementScore / 10) * 1.5;
-                                
-                                $utilizedScore = min(($utilized / 16) * 10, 10);
-                                $utilizedFinal = ($utilizedScore / 10) * 2;
-                                
-                                $wastedScore = max(0, 10 - $wasted);
-                                $wastedFinal = ($wastedScore / 10) * 1;
-                                
-                                $timeScore = $sleepFinal + $managementFinal + $utilizedFinal + $wastedFinal;
-                            @endphp
 
                             <div class="flex justify-between items-center p-2 bg-white dark:bg-gray-800 rounded">
                                 <span class="text-sm dark:text-gray-300">Sleep</span>

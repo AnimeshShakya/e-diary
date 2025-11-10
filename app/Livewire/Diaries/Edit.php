@@ -8,6 +8,8 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
+use App\Models\DailyScore;
+use App\Services\ScoreService;
 
 #[Layout('layouts.admin')]
 class Edit extends Component
@@ -75,6 +77,16 @@ class Edit extends Component
         $this->validate();
 
         $this->diary->update($this->form);
+        // update stored score for this diary
+        try {
+            $score = ScoreService::calculateFromDiary($this->diary->fresh());
+            DailyScore::updateOrCreate([
+                'user_id' => $this->diary->user_id,
+                'date' => $this->diary->date,
+            ], ['score' => $score]);
+        } catch (\Throwable $e) {
+            // don't block diary update if score persist fails
+        }
 
         session()->flash('status', 'Diary updated');
 

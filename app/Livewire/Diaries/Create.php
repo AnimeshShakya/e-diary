@@ -6,6 +6,8 @@ use App\Models\Checklist;
 use App\Models\Diary;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
+use App\Models\DailyScore;
+use App\Services\ScoreService;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 
@@ -145,12 +147,20 @@ class Create extends Component
         $data = $this->validate()['form'];
         $data['user_id'] = Auth::id();
         $diary = Diary::create($data);
+        // compute and persist daily score
+        try {
+            $score = ScoreService::calculateFromDiary($diary);
+            DailyScore::updateOrCreate([
+                'user_id' => $diary->user_id,
+                'date' => $diary->date,
+            ], ['score' => $score]);
+        } catch (\Throwable $e) {
+            // don't block diary creation if score persist fails; just continue
+        }
 
         session()->flash('status', 'Diary created successfully!');
-        session()->flash('show_score', true);
-        session()->flash('diary_date', $diary->date);
-
-        return redirect()->route('diaries.index');
+        // dd($diary->date);
+        return redirect()->route('score-calculator', ['date' => $diary->date]);
     }
 
     public function render(): View

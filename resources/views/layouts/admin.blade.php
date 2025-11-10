@@ -94,6 +94,11 @@
                     <x-admin.sidebar-link href="{{ $diariesRoute }}" icon="book-open">
                         My Diaries
                     </x-admin.sidebar-link>
+                    @if(\Illuminate\Support\Facades\Route::has('scores'))
+                        <x-admin.sidebar-link href="{{ route('scores') }}" icon="score">
+                            Scores
+                        </x-admin.sidebar-link>
+                    @endif
                     @if(\Illuminate\Support\Facades\Route::has('affirmations.index'))
                         <x-admin.sidebar-link href="{{ route('affirmations.index') }}" icon="notadminaffirmations">
                             Affirmations

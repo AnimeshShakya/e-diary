@@ -57,7 +57,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/affirmations/{affirmation}/edit', AffirmationsEdit::class)->name('affirmations.edit');
 
     // Score Calculator - accessible to all authenticated users
-    Route::get('/score-calculator', \App\Livewire\ScoreCalculator::class)->name('score-calculator');
+    Route::get('/score-calculator/{date}', \App\Livewire\ScoreCalculator::class)->name('score-calculator');
+    // Daily scores page
+    Route::get('/scores', \App\Livewire\Scores::class)->name('scores');
+    // CSV export route for scores (fallback for browsers)
+    Route::get('/scores/export', [\App\Http\Controllers\ScoresExportController::class, 'export'])->name('scores.export');
 });
 
 Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.')->group(function () {
