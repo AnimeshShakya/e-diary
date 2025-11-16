@@ -11,10 +11,10 @@ use Livewire\Component;
 #[Layout('layouts.admin')]
 class Create extends Component
 {
-    /** @var array{type:null|int|string, description:null|string} */
+    /** @var array{morning_affirmation:null|string, night_affirmation:null|string} */
     public array $form = [
-        'type' => null,
-        'description' => null,
+        'morning_affirmation' => null,
+        'night_affirmation' => null,
     ];
 
     public function mount(): mixed
@@ -25,17 +25,14 @@ class Create extends Component
             return redirect()->route('affirmations.edit', $existing);
         }
 
-        // Default type to morning (1)
-        $this->form['type'] = 1;
-
         return null;
     }
 
     protected function rules(): array
     {
         return [
-            'form.type' => ['required', 'in:0,1'],
-            'form.description' => ['required', 'string', 'min:3'],
+            'form.morning_affirmation' => ['required', 'string', 'min:3'],
+            'form.night_affirmation' => ['required', 'string', 'min:3'],
         ];
     }
 
@@ -44,14 +41,12 @@ class Create extends Component
         $validated = $this->validate();
         $data = $validated['form'];
         $data['user_id'] = Auth::id();
-        // Cast to boolean
-        $data['type'] = (bool) ((int) $data['type']);
 
         $affirmation = Affirmation::create($data);
 
-        session()->flash('status', 'Affirmation created');
+        session()->flash('status', 'Affirmations created successfully');
 
-        return redirect()->route('affirmations.edit', $affirmation);
+        return redirect()->route('affirmations.index');
     }
 
     public function render(): View

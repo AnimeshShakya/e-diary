@@ -12,15 +12,13 @@ class Affirmation extends Model
 
     protected $fillable = [
         'user_id',
-        'type',
-        'description',
+        'morning_affirmation',
+        'night_affirmation',
     ];
 
     protected function casts(): array
     {
-        return [
-            'type' => 'boolean',
-        ];
+        return [];
     }
 
     public function user(): BelongsTo

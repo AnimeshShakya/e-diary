@@ -1,4 +1,4 @@
-<div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 space-y-6">
+<div class="max-w-7xl mx-auto space-y-6">
     <!-- Header -->
     <div class="flex items-center justify-between">
         <div class="flex items-center gap-3">
@@ -15,7 +15,7 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
                 </svg>
                 <div>
-                    <h2 class="text-xl font-semibold text-gray-200">Good Evening! 🌙</h2>
+                    <h2 class="text-xl font-semibold text-gray-200">Good Night! 🌙</h2>
                     <p class="text-sm text-gray-400">Here's your night affirmation</p>
                 </div>
             @endif

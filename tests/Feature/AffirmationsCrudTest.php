@@ -30,14 +30,15 @@ class AffirmationsCrudTest extends TestCase
         $this->actingAs($user);
 
         Livewire::test(\App\Livewire\Affirmations\Create::class)
-            ->set('form.type', 1)
-            ->set('form.description', 'Start the day with gratitude')
+            ->set('form.morning_affirmation', 'Morning test affirmation')
+            ->set('form.night_affirmation', 'Night test affirmation')
             ->call('save')
             ->assertHasNoErrors();
 
         $this->assertDatabaseHas('affirmations', [
             'user_id' => $user->id,
-            'description' => 'Start the day with gratitude',
+            'morning_affirmation' => 'Morning test affirmation',
+            'night_affirmation' => 'Night test affirmation',
         ]);
     }
 
@@ -48,20 +49,20 @@ class AffirmationsCrudTest extends TestCase
 
         $affirmation = Affirmation::create([
             'user_id' => $user->id,
-            'type' => true,
-            'description' => 'Old',
+            'morning_affirmation' => 'Original morning',
+            'night_affirmation' => 'Original night',
         ]);
 
         Livewire::test(\App\Livewire\Affirmations\Edit::class, ['affirmation' => $affirmation->id])
-            ->set('form.description', 'Updated')
-            ->set('form.type', 0)
+            ->set('form.morning_affirmation', 'Updated morning')
+            ->set('form.night_affirmation', 'Updated night')
             ->call('save')
             ->assertHasNoErrors();
 
         $this->assertDatabaseHas('affirmations', [
             'id' => $affirmation->id,
-            'description' => 'Updated',
-            'type' => false,
+            'morning_affirmation' => 'Updated morning',
+            'night_affirmation' => 'Updated night',
         ]);
     }
 
@@ -72,8 +73,8 @@ class AffirmationsCrudTest extends TestCase
 
         $affirmation = Affirmation::create([
             'user_id' => $user->id,
-            'type' => true,
-            'description' => 'To be deleted',
+            'morning_affirmation' => 'To be deleted morning',
+            'night_affirmation' => 'To be deleted night',
         ]);
 
         Livewire::test(\App\Livewire\Affirmations\Edit::class, ['affirmation' => $affirmation->id])

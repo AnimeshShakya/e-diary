@@ -13,10 +13,10 @@ class Edit extends Component
 {
     public Affirmation $record;
 
-    /** @var array{type:null|int|string, description:null|string} */
+    /** @var array{morning_affirmation:null|string, night_affirmation:null|string} */
     public array $form = [
-        'type' => null,
-        'description' => null,
+        'morning_affirmation' => null,
+        'night_affirmation' => null,
     ];
 
     public function mount(Affirmation $affirmation): void
@@ -31,16 +31,16 @@ class Edit extends Component
         $this->record = $affirmation;
 
         $this->form = [
-            'type' => $affirmation->type ? 1 : 0,
-            'description' => $affirmation->description,
+            'morning_affirmation' => $affirmation->morning_affirmation,
+            'night_affirmation' => $affirmation->night_affirmation,
         ];
     }
 
     protected function rules(): array
     {
         return [
-            'form.type' => ['required', 'in:0,1'],
-            'form.description' => ['required', 'string', 'min:3'],
+            'form.morning_affirmation' => ['required', 'string', 'min:3'],
+            'form.night_affirmation' => ['required', 'string', 'min:3'],
         ];
     }
 
@@ -48,11 +48,10 @@ class Edit extends Component
     {
         $validated = $this->validate();
         $data = $validated['form'];
-        $data['type'] = (bool) ((int) $data['type']);
 
         $this->record->update($data);
 
-        session()->flash('status', 'Affirmation updated');
+        session()->flash('status', 'Affirmations updated successfully');
 
         return redirect()->route('affirmations.index');
     }
