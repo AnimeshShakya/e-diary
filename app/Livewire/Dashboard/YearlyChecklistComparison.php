@@ -17,13 +17,14 @@ class YearlyChecklistComparison extends Component
 
     public function mount(): void
     {
-        // defer heavy aggregation to frontend initialization for snappy loads
+        $this->loadData();
     }
 
     // called by the frontend via wire:init
     public function load(): void
     {
         $this->loadData();
+        $this->dispatch('chart-data-loaded-yearly');
     }
 
     protected function loadData(): void

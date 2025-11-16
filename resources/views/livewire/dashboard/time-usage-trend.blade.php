@@ -1,4 +1,4 @@
-<x-dashboard.card wire:init="load" class="hover:border-emerald-500/50">
+<x-dashboard.card class="hover:border-emerald-500/50">
     <div class="flex items-center justify-between mb-6">
         <h3 class="text-lg font-semibold text-gray-200">Time Usage Trend (Last 60 Days)</h3>
         <span class="text-sm text-gray-400">Hours per Day</span>
@@ -13,21 +13,37 @@
         <div class="relative w-full h-96">
             <canvas id="timeUsageTrendChart"></canvas>
         </div>
+    @else
+        <div class="text-center py-12">
+            <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-800/50 flex items-center justify-center">
+                <svg class="w-8 h-8 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+            <p class="text-gray-500 text-sm">No time usage data for the last 60 days</p>
+        </div>
+    @endif
 
-        <script>
-            (function(){
-                const init = function () {
-                    const el = document.getElementById('timeUsageTrendChart');
-                    if (!el) return;
-                    if (el.dataset.rendered) return;
-                    el.dataset.rendered = '1';
+    <script>
+        (function(){
+            const init = function () {
+                const el = document.getElementById('timeUsageTrendChart');
+                if (!el) return;
+                if (el.dataset.rendered) return;
+                el.dataset.rendered = '1';
 
-                    const ctx = el.getContext('2d');
-                    new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: @json($labels),
-                        datasets: @json($datasets).map((dataset) => {
+                const labels = @json($labels);
+                const datasets = @json($datasets);
+                
+                if (!labels || labels.length === 0) return;
+
+                const ctx = el.getContext('2d');
+                new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: datasets.map((dataset) => {
                             const colors = {
                                 'Sleep (avg)': { border: '#A78BFA', bg: 'rgba(167, 139, 250, 0.1)' },
                                 'Sleep (MA7)': { border: '#F59E0B', bg: 'rgba(245, 158, 11, 0.1)' },
@@ -114,6 +130,7 @@
                     });
                 };
 
+                // Initialize chart immediately or after Chart.js loads
                 if (window.Chart) {
                     init();
                 } else {
@@ -122,17 +139,13 @@
                     s.onload = init;
                     document.head.appendChild(s);
                 }
+                
+                // Also listen for dynamic updates
+                Livewire.on('chart-data-loaded-time-usage', () => {
+                    if (window.Chart) {
+                        init();
+                    }
+                });
             })();
         </script>
-    @else
-        <div class="text-center py-12">
-            <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-800/50 flex items-center justify-center">
-                <svg class="w-8 h-8 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
-            </div>
-            <p class="text-gray-500 text-sm">No time usage data for the last 60 days</p>
-        </div>
-    @endif
-</x-dashboard.card>
+    </x-dashboard.card>

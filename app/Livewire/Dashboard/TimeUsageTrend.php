@@ -17,13 +17,14 @@ class TimeUsageTrend extends Component
 
     public function mount(): void
     {
-        // defer expensive aggregation until the client requests it
+        $this->loadData();
     }
 
     // called by the frontend via wire:init to avoid blocking initial render
     public function load(): void
     {
         $this->loadData();
+        $this->dispatch('chart-data-loaded-time-usage');
     }
 
     protected function loadData(): void

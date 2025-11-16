@@ -1,4 +1,4 @@
-<x-dashboard.card wire:init="load" class="hover:border-purple-500/50">
+<x-dashboard.card class="hover:border-purple-500/50">
     <div class="flex items-center justify-between mb-6">
         <h3 class="text-lg font-semibold text-gray-200">Yearly Checklist Comparison</h3>
         <span class="text-sm text-gray-400">Completion Rate (%)</span>
@@ -10,25 +10,41 @@
     @endphp
 
     @if(count($datasets) > 0)
-            {{-- Chart --}}
-            <div class="relative w-full h-80">
-                <canvas id="yearlyChecklistChart"></canvas>
-            </div>
+        {{-- Chart --}}
+        <div class="relative w-full h-80">
+            <canvas id="yearlyChecklistChart"></canvas>
+        </div>
+    @else
+            <div class="text-center py-12">
+                <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-800/50 flex items-center justify-center">
+                    <svg class="w-8 h-8 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                              d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                    </svg>
+                </div>
+            <p class="text-gray-500 text-sm">No yearly checklist data available</p>
+        </div>
+    @endif
 
-            <script>
-                (function(){
-                    const init = function () {
-                        const el = document.getElementById('yearlyChecklistChart');
-                        if (!el) return;
-                        if (el.dataset.rendered) return;
-                        el.dataset.rendered = '1';
+    <script>
+        (function(){
+            const init = function () {
+                const el = document.getElementById('yearlyChecklistChart');
+                if (!el) return;
+                if (el.dataset.rendered) return;
+                el.dataset.rendered = '1';
 
-                        const ctx = el.getContext('2d');
-                        new Chart(ctx, {
-                            type: 'bar',
-                            data: {
-                                labels: @json($months),
-                                datasets: @json($datasets)
+                const months = @json($months);
+                const datasets = @json($datasets);
+                
+                if (!datasets || datasets.length === 0) return;
+
+                const ctx = el.getContext('2d');
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: months,
+                        datasets: datasets
                             },
                             options: {
                                 responsive: true,
@@ -92,6 +108,7 @@
                         });
                     };
 
+                    // Initialize chart immediately or after Chart.js loads
                     if (window.Chart) {
                         init();
                     } else {
@@ -100,17 +117,13 @@
                         s.onload = init;
                         document.head.appendChild(s);
                     }
+                    
+                    // Also listen for dynamic updates
+                    Livewire.on('chart-data-loaded-yearly', () => {
+                        if (window.Chart) {
+                            init();
+                        }
+                    });
                 })();
             </script>
-        @else
-            <div class="text-center py-12">
-                <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-800/50 flex items-center justify-center">
-                    <svg class="w-8 h-8 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                              d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                    </svg>
-                </div>
-            <p class="text-gray-500 text-sm">No yearly checklist data available</p>
-        </div>
-    @endif
 </x-dashboard.card>
