@@ -18,10 +18,8 @@
 
                     <div class="flex justify-center items-center mb-4">
                         <div class="relative">
-                            <!-- Animated Ring -->
                             <div class="absolute inset-0 rounded-full bg-gradient-to-tr from-purple-500 to-pink-500 animate-spin-slow blur-md opacity-50"></div>
                             
-                            <!-- Score Circle -->
                             <div class="relative w-32 h-32 rounded-full bg-gradient-to-tr from-purple-500 to-pink-500 p-[3px]">
                                 <div class="w-full h-full bg-[#1a1a1a] rounded-full flex items-center justify-center">
                                     <span class="text-5xl font-bold bg-gradient-to-br from-purple-400 to-pink-400 bg-clip-text text-transparent">
@@ -105,7 +103,6 @@
                                     </span>
                                 </div>
 
-                                <!-- Emoji Mood -->
                                 <span class="text-2xl opacity-70 group-hover:opacity-100 group-hover:scale-110 transition-all duration-200">
                                     @if($dayScore['score'] >= 9) 
                                     @elseif($dayScore['score'] >= 7) 

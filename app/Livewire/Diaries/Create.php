@@ -3,11 +3,11 @@
 namespace App\Livewire\Diaries;
 
 use App\Models\Checklist;
+use App\Models\DailyScore;
 use App\Models\Diary;
+use App\Services\ScoreService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
-use App\Models\DailyScore;
-use App\Services\ScoreService;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 
@@ -159,6 +159,7 @@ class Create extends Component
         }
 
         session()->flash('status', 'Diary created successfully!');
+
         // dd($diary->date);
         return redirect()->route('score-calculator', ['date' => $diary->date]);
     }

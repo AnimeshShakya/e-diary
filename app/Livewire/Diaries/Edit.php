@@ -3,13 +3,13 @@
 namespace App\Livewire\Diaries;
 
 use App\Models\Checklist;
+use App\Models\DailyScore;
 use App\Models\Diary;
+use App\Services\ScoreService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
-use App\Models\DailyScore;
-use App\Services\ScoreService;
 
 #[Layout('layouts.admin')]
 class Edit extends Component

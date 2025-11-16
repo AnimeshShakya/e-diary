@@ -29,6 +29,7 @@ class Password extends Component
             'form.new_password.confirmed' => 'New password confirmation does not match.',
         ];
     }
+
     public function render(): View
     {
         return view('livewire.settings.password');

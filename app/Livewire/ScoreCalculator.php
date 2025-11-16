@@ -4,50 +4,36 @@ namespace App\Livewire;
 
 use App\Models\Checklist;
 use App\Models\Diary;
+use App\Services\ScoreService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
-use App\Services\ScoreService;
 
 #[Layout('layouts.admin')]
 class ScoreCalculator extends Component
 {
     public $selectedDate;
-
     public $totalChecklist = 0;
-
     public $completedChecklist = 0;
-
     public $sleep = 7;
-
     public $management = 1;
-
     public $utilized = 16;
-
     public $wasted = 0;
-
     public $score = 0;
-
     public $hasData = false;
-
-    public $mode = 'single'; // 'single' or 'monthly'
-
+    public $mode = 'single';
     public $monthlyScores = [];
-
     public $averageScore = 0;
-
     protected $queryString = ['selectedDate' => ['as' => 'date']];
+    public $detail_data = [];
 
     public function mount($mode = 'single', $date = null)
     {
         $this->mode = $mode;
         $this->selectedDate = $date ?? Carbon::today()->format('Y-m-d');
-        // Defer loading heavy diary queries until the frontend triggers it
-        // via wire:init. This keeps initial navigation fast.
     }
 
-    // Called from Blade via wire:init to populate state after initial render
     public function load(): void
     {
         if ($this->mode === 'monthly') {
@@ -64,11 +50,9 @@ class ScoreCalculator extends Component
 
     public function loadMonthlyData()
     {
-        // Prefer precomputed DailyScore records if available for faster loads
         $startDate = Carbon::now()->subDays(7)->toDateString();
         $endDate = Carbon::now()->toDateString();
 
-        // If the daily_scores table exists, query it. Otherwise fallback to diaries.
         try {
             if (\Illuminate\Support\Facades\Schema::hasTable('daily_scores')) {
                 $rows = \App\Models\DailyScore::query()
@@ -98,10 +82,8 @@ class ScoreCalculator extends Component
                 return;
             }
         } catch (\Throwable $e) {
-            // If anything goes wrong querying the table, fall back to diary-based compute
         }
 
-        // Fallback: compute from diaries directly
         $diaries = Diary::where('user_id', Auth::id())
             ->whereBetween('date', [$startDate, $endDate])
             ->orderBy('date', 'desc')
@@ -136,19 +118,18 @@ class ScoreCalculator extends Component
         if ($diary) {
             $this->hasData = true;
 
-            // Load time management data from diary
             $this->sleep = $diary->sleep ?? 7;
             $this->management = $diary->management ?? 1;
             $this->utilized = $diary->utilized ?? 16;
             $this->wasted = $diary->wasted ?? 0;
 
-            // Load checklist data
             $checklistArray = json_decode($diary->checklist_array, true) ?? [];
             $this->totalChecklist = Checklist::query()->count();
             $this->completedChecklist = count($checklistArray);
 
-            // Auto-calculate score when data is loaded
-            $this->score = ScoreService::calculateFromDiary($diary);
+            $score_service = ScoreService::calculateFromDiary($diary);
+            $this->score = $score_service['round'];
+            $this->detail_data = $score_service['detail'];
         } else {
             $this->hasData = false;
             $this->resetData();

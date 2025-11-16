@@ -1,7 +1,6 @@
 <div class="max-w-4xl mx-auto p-6 bg-white dark:bg-[#1a1a1a] rounded-lg shadow-lg" wire:init="load">
     <h2 class="text-3xl font-bold mb-6 text-center text-gray-800 dark:text-gray-200">Daily Productivity Score Calculator</h2>
 
-    <!-- Date Selector -->
     <div class="mb-6">
         <h2 class="text-1xl font-bold mb-6 text-center text-gray-800 dark:text-gray-200">
             Selected Date: {{ $selectedDate ? \Carbon\Carbon::parse($selectedDate)->format('Y-m-d') : 'None' }}
@@ -17,9 +16,7 @@
 
     @if($hasData)
         <div class="grid md:grid-cols-2 gap-6">
-            <!-- Left Column: Data Display -->
             <div>
-                <!-- Checklist Section -->
                 <div class="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
                     <h3 class="text-lg font-semibold mb-3 text-blue-800 dark:text-blue-400">📋 Checklist (50%)</h3>
                     
@@ -54,7 +51,7 @@
                 </div>
 
                 <!-- Time Management Score -->
-                @php
+                {{-- @php
                     if ($sleep >= 6 && $sleep <= 8) $sleepScore = 10;
                     elseif ($sleep == 5 || $sleep == 9) $sleepScore = 7;
                     elseif ($sleep == 4 || $sleep == 10) $sleepScore = 4;
@@ -71,7 +68,7 @@
                     $wastedFinal = ($wastedScore / 10) * 1;
                     
                     $timeScore = $sleepFinal + $managementFinal + $utilizedFinal + $wastedFinal;
-                @endphp
+                @endphp --}}
                 <!-- Time Management Section -->
                 <div class="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
                     <h3 class="text-lg font-semibold mb-3 text-green-800 dark:text-green-400">⏰ Time Management (50%)</h3>
@@ -101,16 +98,17 @@
                             <div class="text-xs text-gray-500 dark:text-gray-400">Less is better</div>
                         </div>
                     </div>
-                    @if($timeScore > 0)
+                
+                    @if($detail_data['timeScore'] > 0)
                         <div class="mt-3 p-3 bg-white dark:bg-gray-800 rounded">
                             <div class="text-sm text-gray-600 dark:text-gray-400 mb-1">Score Rate</div>
                             <div class="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                                {{ round($timeScore * 10 , 2) }}%
+                                {{ round(( $detail_data['timeScore'] / 5 ) * 100 , 2) }}%
                             </div>
                             <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 mt-2">
                                 <div 
                                     class="bg-blue-600 dark:bg-blue-400 h-2 rounded-full transition-all duration-500"
-                                    style="width: {{ $timeScore * 10 }}%"
+                                    style="width: {{ ( $detail_data['timeScore'] / 5 ) * 100 }}%"
                                 ></div>
                             </div>
                         </div>
@@ -129,6 +127,21 @@
                                 {{ $score }}
                             </div>
                             <div class="text-2xl text-gray-600 dark:text-gray-400">out of 10</div>
+                        </div>
+
+                        <!-- Progress Bar -->
+                        <div class="mb-6">
+                            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-4">
+                                <div 
+                                    class="h-4 rounded-full transition-all duration-500
+                                    @if($score >= 9) bg-green-500
+                                    @elseif($score >= 7) bg-blue-500
+                                    @elseif($score >= 5) bg-yellow-500
+                                    @else bg-red-500
+                                    @endif"
+                                    style="width: {{ ($score / 10) * 100 }}%"
+                                ></div>
+                            </div>
                         </div>
 
                         <!-- Score Rating -->
@@ -163,54 +176,40 @@
                             @php
                                 $checklistScore = $totalChecklist > 0 ? ($completedChecklist / $totalChecklist) * 5 : 0;
                             @endphp
-                            <div class="flex justify-between items-center p-2 bg-white dark:bg-gray-800 rounded">
-                                <span class="text-sm dark:text-gray-300">📋 Checklist</span>
+                            <div class="flex justify-between items-center p-2 bg-white dark:bg-gray-800 rounded font-semibold">
+                                <span class="dark:text-gray-200">Checklist Score</span>
                                 <span class="font-semibold text-blue-600 dark:text-blue-400">{{ round($checklistScore, 2) }} / 5</span>
                             </div>
 
 
                             <div class="flex justify-between items-center p-2 bg-white dark:bg-gray-800 rounded">
                                 <span class="text-sm dark:text-gray-300">Sleep</span>
-                                <span class="font-semibold text-green-600 dark:text-green-400">{{ round($sleepFinal, 2) }} / 2.5</span>
+                                <span class="font-semibold text-green-600 dark:text-green-400">{{ round($detail_data['sleepFinal'], 2) }} / 2</span>
                             </div>
 
                             <div class="flex justify-between items-center p-2 bg-white dark:bg-gray-800 rounded">
                                 <span class="text-sm dark:text-gray-300">Management</span>
-                                <span class="font-semibold text-green-600 dark:text-green-400">{{ round($managementFinal, 2) }} / 1.5</span>
+                                <span class="font-semibold text-green-600 dark:text-green-400">{{ round($detail_data['managementFinal'], 2) }} / 1</span>
                             </div>
 
                             <div class="flex justify-between items-center p-2 bg-white dark:bg-gray-800 rounded">
                                 <span class="text-sm dark:text-gray-300">Utilized Time</span>
-                                <span class="font-semibold text-green-600 dark:text-green-400">{{ round($utilizedFinal, 2) }} / 2</span>
+                                <span class="font-semibold text-green-600 dark:text-green-400">{{ round($detail_data['utilizedFinal'], 2) }} / 3</span>
                             </div>
 
                             <div class="flex justify-between items-center p-2 bg-white dark:bg-gray-800 rounded">
                                 <span class="text-sm dark:text-gray-300">Wasted Time</span>
-                                <span class="font-semibold text-green-600 dark:text-green-400">{{ round($wastedFinal, 2) }} / 1</span>
+                                <span class="font-semibold text-green-600 dark:text-green-400">{{ round($detail_data['wastedFinal'], 2) }} / 3</span>
                             </div>
 
                             <div class="border-t-2 border-gray-300 dark:border-gray-600 pt-2 mt-2">
                                 <div class="flex justify-between items-center p-2 bg-purple-100 dark:bg-purple-900/30 rounded font-semibold">
                                     <span class="dark:text-gray-200">Time Score</span>
-                                    <span class="text-purple-600 dark:text-purple-400">{{ round($timeScore, 2) }} / 5</span>
+                                    <span class="text-purple-600 dark:text-purple-400">{{ round($detail_data['timeScore'], 2) }} / 5</span>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Progress Bar -->
-                        <div class="mt-6">
-                            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-4">
-                                <div 
-                                    class="h-4 rounded-full transition-all duration-500
-                                    @if($score >= 9) bg-green-500
-                                    @elseif($score >= 7) bg-blue-500
-                                    @elseif($score >= 5) bg-yellow-500
-                                    @else bg-red-500
-                                    @endif"
-                                    style="width: {{ ($score / 10) * 100 }}%"
-                                ></div>
-                            </div>
-                        </div>
                     </div>
                 @endif
             </div>

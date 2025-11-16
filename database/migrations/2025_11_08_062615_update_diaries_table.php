@@ -12,7 +12,6 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('diaries', function (Blueprint $table) {
-            //add unique contraints to user_id and date
             $table->unique(['user_id', 'date']);
         });
     }

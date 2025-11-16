@@ -5,7 +5,6 @@ namespace App\Livewire;
 use App\Models\DailyScore;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Str;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -16,7 +15,9 @@ class Scores extends Component
     use WithPagination;
 
     public ?string $start_date = null;
+
     public ?string $end_date = null;
+
     public $perPage = 15;
 
     protected $queryString = ['start_date', 'end_date'];
