@@ -18,12 +18,12 @@
                 </div>
                 <div>
                     <label class="block text-sm text-gray-400 mb-1">Yesterday Sleep Time</label>
-                    <input type="time" wire:model.defer="form.yesterday_sleep_time" class="w-full rounded-xl border-gray-800 bg-gray-900/40 text-gray-200 focus:border-indigo-500 focus:ring-indigo-500" />
+                    <input type="time" wire:model.live="form.yesterday_sleep_time" class="w-full rounded-xl border-gray-800 bg-gray-900/40 text-gray-200 focus:border-indigo-500 focus:ring-indigo-500" />
                     @error('form.yesterday_sleep_time') <p class="text-red-400 text-sm mt-1">{{ $message }}</p> @enderror
                 </div>
                 <div>
                     <label class="block text-sm text-gray-400 mb-1">Today Wake Time</label>
-                    <input type="time" wire:model.defer="form.today_wake_time" class="w-full rounded-xl border-gray-800 bg-gray-900/40 text-gray-200 focus:border-indigo-500 focus:ring-indigo-500" />
+                    <input type="time" wire:model.live="form.today_wake_time" class="w-full rounded-xl border-gray-800 bg-gray-900/40 text-gray-200 focus:border-indigo-500 focus:ring-indigo-500" />
                     @error('form.today_wake_time') <p class="text-red-400 text-sm mt-1">{{ $message }}</p> @enderror
                 </div>
                 <div class="md:col-span-2">
@@ -56,24 +56,24 @@
                     <textarea rows="2" wire:model.defer="form.good_memo" class="w-full rounded-xl border-gray-800 bg-gray-900/40 text-gray-200 focus:border-indigo-500 focus:ring-indigo-500"></textarea>
                     @error('form.good_memo') <p class="text-red-400 text-sm mt-1">{{ $message }}</p> @enderror
                 </div>
-                <div>
-                    <label class="block text-sm text-gray-400 mb-1">Sleep</label>
-                    <input type="number" wire:model.defer="form.sleep" class="w-full rounded-xl border-gray-800 bg-gray-900/40 text-gray-200 focus:border-indigo-500 focus:ring-indigo-500" />
+                <div x-data>
+                    <label class="block text-sm text-gray-400 mb-1">Sleep (Auto-calculated)</label>
+                    <input type="text" wire:model.live="form.sleep" readonly class="w-full rounded-xl border-gray-800 bg-gray-900/60 text-gray-400 cursor-not-allowed focus:border-indigo-500 focus:ring-indigo-500" placeholder="HH:MM" />
                     @error('form.sleep') <p class="text-red-400 text-sm mt-1">{{ $message }}</p> @enderror
                 </div>
-                <div>
-                    <label class="block text-sm text-gray-400 mb-1">Management</label>
-                    <input type="number" wire:model.defer="form.management" class="w-full rounded-xl border-gray-800 bg-gray-900/40 text-gray-200 focus:border-indigo-500 focus:ring-indigo-500" />
+                <div x-data>
+                    <label class="block text-sm text-gray-400 mb-1">Management (HH:MM)</label>
+                    <input type="text" wire:model.live="form.management" maxlength="5" x-on:input="formatTimeInput($event)" class="w-full rounded-xl border-gray-800 bg-gray-900/40 text-gray-200 focus:border-indigo-500 focus:ring-indigo-500" placeholder="HH:MM" />
                     @error('form.management') <p class="text-red-400 text-sm mt-1">{{ $message }}</p> @enderror
                 </div>
-                <div>
-                    <label class="block text-sm text-gray-400 mb-1">Utilized</label>
-                    <input type="number" wire:model.defer="form.utilized" class="w-full rounded-xl border-gray-800 bg-gray-900/40 text-gray-200 focus:border-indigo-500 focus:ring-indigo-500" />
+                <div x-data>
+                    <label class="block text-sm text-gray-400 mb-1">Utilized (HH:MM)</label>
+                    <input type="text" wire:model.live="form.utilized" maxlength="5" x-on:input="formatTimeInput($event)" class="w-full rounded-xl border-gray-800 bg-gray-900/40 text-gray-200 focus:border-indigo-500 focus:ring-indigo-500" placeholder="HH:MM" />
                     @error('form.utilized') <p class="text-red-400 text-sm mt-1">{{ $message }}</p> @enderror
                 </div>
-                <div>
-                    <label class="block text-sm text-gray-400 mb-1">Wasted</label>
-                    <input type="number" wire:model.defer="form.wasted" class="w-full rounded-xl border-gray-800 bg-gray-900/40 text-gray-200 focus:border-indigo-500 focus:ring-indigo-500" />
+                <div x-data>
+                    <label class="block text-sm text-gray-400 mb-1">Wasted (Auto-calculated)</label>
+                    <input type="text" wire:model.live="form.wasted" readonly class="w-full rounded-xl border-gray-800 bg-gray-900/60 text-gray-400 cursor-not-allowed focus:border-indigo-500 focus:ring-indigo-500" placeholder="HH:MM" />
                     @error('form.wasted') <p class="text-red-400 text-sm mt-1">{{ $message }}</p> @enderror
                 </div>
                 <div class="md:col-span-2">
@@ -89,3 +89,16 @@
         </div>
     </div>
 </div>
+
+<script>
+function formatTimeInput(event) {
+    let input = event.target;
+    let value = input.value.replace(/[^0-9]/g, '');
+    
+    if (value.length >= 2) {
+        value = value.substring(0, 2) + ':' + value.substring(2, 4);
+    }
+    
+    input.value = value;
+}
+</script>

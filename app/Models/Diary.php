@@ -39,11 +39,10 @@ class Diary extends Model
     {
         return [
             'date' => 'date',
-            'sleep_wake_time' => 'datetime:H:i',
-            'sleep' => 'integer',
-            'management' => 'integer',
-            'utilized' => 'integer',
-            'wasted' => 'integer',
+            'sleep' => 'string',
+            'management' => 'string',
+            'utilized' => 'string',
+            'wasted' => 'string',
         ];
     }
 

@@ -16,10 +16,10 @@ class ScoreCalculator extends Component
     public $selectedDate;
     public $totalChecklist = 0;
     public $completedChecklist = 0;
-    public $sleep = 7;
-    public $management = 1;
-    public $utilized = 16;
-    public $wasted = 0;
+    public $sleep = '07:00';
+    public $management = '01:00';
+    public $utilized = '16:00';
+    public $wasted = '00:00';
     public $score = 0;
     public $hasData = false;
     public $mode = 'single';
@@ -118,10 +118,10 @@ class ScoreCalculator extends Component
         if ($diary) {
             $this->hasData = true;
 
-            $this->sleep = $diary->sleep ?? 7;
-            $this->management = $diary->management ?? 1;
-            $this->utilized = $diary->utilized ?? 16;
-            $this->wasted = $diary->wasted ?? 0;
+            $this->sleep = $diary->sleep ?? '07:00';
+            $this->management = $diary->management ?? '01:00';
+            $this->utilized = $diary->utilized ?? '16:00';
+            $this->wasted = $diary->wasted ?? '00:00';
 
             $checklistArray = json_decode($diary->checklist_array, true) ?? [];
             $this->totalChecklist = Checklist::query()->count();

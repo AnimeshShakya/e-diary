@@ -53,18 +53,34 @@
                     @error('form.sleep') <p class="text-red-400 text-sm mt-1">{{ $message }}</p> @enderror
                 </div>
                 <div>
-                    <label class="block text-sm text-gray-400 mb-1">Management</label>
-                    <input type="number" wire:model.defer="form.management" class="w-full rounded-xl border-gray-800 bg-gray-900/40 text-gray-200 focus:border-indigo-500 focus:ring-indigo-500" />
+                    <label class="block text-sm text-gray-400 mb-1">Management (HH:MM)</label>
+                    <input
+                        type="text"
+                        placeholder="HH:MM"
+                        maxlength="5"
+                        x-data="{}"
+                        x-on:input="formatTimeInput($event.target)"
+                        wire:model.live="form.management"
+                        class="w-full rounded-xl border-gray-800 bg-gray-900/40 text-gray-200 focus:border-indigo-500 focus:ring-indigo-500"
+                    />
                     @error('form.management') <p class="text-red-400 text-sm mt-1">{{ $message }}</p> @enderror
                 </div>
                 <div>
-                    <label class="block text-sm text-gray-400 mb-1">Utilized</label>
-                    <input type="number" wire:model.defer="form.utilized" class="w-full rounded-xl border-gray-800 bg-gray-900/40 text-gray-200 focus:border-indigo-500 focus:ring-indigo-500" />
+                    <label class="block text-sm text-gray-400 mb-1">Utilized (HH:MM)</label>
+                    <input
+                        type="text"
+                        placeholder="HH:MM"
+                        maxlength="5"
+                        x-data="{}"
+                        x-on:input="formatTimeInput($event.target)"
+                        wire:model.live="form.utilized"
+                        class="w-full rounded-xl border-gray-800 bg-gray-900/40 text-gray-200 focus:border-indigo-500 focus:ring-indigo-500"
+                    />
                     @error('form.utilized') <p class="text-red-400 text-sm mt-1">{{ $message }}</p> @enderror
                 </div>
                 <div>
-                    <label class="block text-sm text-gray-400 mb-1">Wasted</label>
-                    <input type="number" wire:model.defer="form.wasted" class="w-full rounded-xl border-gray-800 bg-gray-900/40 text-gray-200 focus:border-indigo-500 focus:ring-indigo-500" />
+                    <label class="block text-sm text-gray-400 mb-1">Wasted (Auto-calculated)</label>
+                    <input type="text" wire:model.live="form.wasted" readonly class="w-full rounded-xl border-gray-800 bg-gray-900/60 text-gray-400 cursor-not-allowed focus:border-indigo-500 focus:ring-indigo-500" placeholder="HH:MM" />
                     @error('form.wasted') <p class="text-red-400 text-sm mt-1">{{ $message }}</p> @enderror
                 </div>
                 <div class="md:col-span-2">
@@ -93,3 +109,19 @@
         </div>
     </div>
 </div>
+
+<script>
+function formatTimeInput(input) {
+    let value = input.value.replace(/[^0-9]/g, ''); // Remove non-digits
+    
+    if (value.length >= 3) {
+        // Auto-insert colon after 2 digits
+        value = value.substring(0, 2) + ':' + value.substring(2, 4);
+    }
+    
+    input.value = value;
+    
+    // Trigger Livewire update
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+}
+</script>

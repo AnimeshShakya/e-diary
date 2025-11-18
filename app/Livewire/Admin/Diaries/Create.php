@@ -3,7 +3,10 @@
 namespace App\Livewire\Admin\Diaries;
 
 use App\Models\Checklist;
+use App\Models\DailyScore;
 use App\Models\Diary;
+use App\Services\ScoreService;
+use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Layout;
@@ -12,24 +15,7 @@ use Livewire\Component;
 #[Layout('layouts.admin')]
 class Create extends Component
 {
-    /**
-     * @var array{
-     *  date:string|null,
-     *  yesterday_sleep_time:string|null,
-     *  today_wake_time:string|null,
-     *  text:string|null,
-     *  urgent_important:string|null,
-     *  urgent_notimportant:string|null,
-     *  noturgent_important:string|null,
-     *  noturgent_notimportant:string|null,
-     *  good_memo:string|null,
-     *  sleep:int|null,
-     *  management:int|null,
-     *  utilized:int|null,
-     *  wasted:int|null,
-     *  checklist_array:string|null,
-     * }
-     */
+    /** @var array{date:?string,yesterday_sleep_time:?string,today_wake_time:?string,text:?string,urgent_important:?string,urgent_notimportant:?string,noturgent_important:?string,noturgent_notimportant:?string,good_memo:?string,sleep:?int,management:?int,utilized:?int,wasted:?int,checklist_array:?string} */
     public array $form = [
         'date' => null,
         'yesterday_sleep_time' => null,
@@ -52,6 +38,7 @@ class Create extends Component
 
     public function mount(): void
     {
+        $this->form['date'] = now()->toDateString();
         $this->selectedChecklists = [];
         $this->syncChecklistArray();
     }
@@ -68,24 +55,142 @@ class Create extends Component
             'form.noturgent_important' => ['required', 'string'],
             'form.noturgent_notimportant' => ['required', 'string'],
             'form.good_memo' => ['required', 'string'],
-            'form.sleep' => ['required', 'integer'],
-            'form.management' => ['required', 'integer'],
-            'form.utilized' => ['required', 'integer'],
-            'form.wasted' => ['required', 'integer'],
+            'form.sleep' => ['required', 'date_format:H:i'],
+            'form.management' => ['required', 'date_format:H:i'],
+            'form.utilized' => ['required', 'date_format:H:i'],
+            'form.wasted' => ['required', 'date_format:H:i'],
             'form.checklist_array' => ['required', 'string'],
         ];
+    }
+
+    protected function validationAttributes(): array
+    {
+        return [
+            'form.sleep' => 'sleep hours',
+            'form.management' => 'management hours',
+            'form.utilized' => 'utilized hours',
+            'form.wasted' => 'wasted hours',
+        ];
+    }
+
+    public function updated($propertyName): void
+    {
+        // For time fields, recalculate first, then validate
+        if (in_array($propertyName, ['form.sleep', 'form.management', 'form.utilized', 'form.wasted'])) {
+            $this->recalculateHours();
+        } else {
+            $this->validateOnly($propertyName);
+        }
+    }
+
+    public function recalculateHours(): void
+    {
+        // Reset validation errors for time fields
+        $this->resetValidation([
+            'form.sleep',
+            'form.management',
+            'form.utilized',
+            'form.wasted',
+        ]);
+
+        $sleepStr = trim($this->form['sleep'] ?? '00:00') ?: '00:00';
+        $managementStr = trim($this->form['management'] ?? '00:00') ?: '00:00';
+        $utilizedStr = trim($this->form['utilized'] ?? '00:00') ?: '00:00';
+
+        $sleepM = ScoreService::timeToMinutes($sleepStr);
+        $managementM = ScoreService::timeToMinutes($managementStr);
+        $utilizedM = ScoreService::timeToMinutes($utilizedStr);
+
+        // Calculate wasted time
+        $wastedM = 24 * 60 - ($sleepM + $managementM + $utilizedM);
+        $wastedM = max(0, $wastedM);
+        $this->form['wasted'] = ScoreService::minutesToTime($wastedM);
+
+        // Validate constraints
+        $maxManagementM = 24 * 60 - $sleepM - $utilizedM;
+        if ($managementM > $maxManagementM) {
+            $this->addError('form.management',
+                'Management hours cannot exceed '.ScoreService::minutesToTime($maxManagementM).' based on sleep & utilized.'
+            );
+        }
+
+        $maxUtilizedM = 24 * 60 - $sleepM - $managementM;
+        if ($utilizedM > $maxUtilizedM) {
+            $this->addError('form.utilized',
+                'Utilized hours cannot exceed '.ScoreService::minutesToTime($maxUtilizedM).' based on sleep & management.'
+            );
+        }
+
+        $totalM = $sleepM + $managementM + $utilizedM + $wastedM;
+        if ($totalM !== 24 * 60) {
+            $msg = 'The total of sleep, management, utilized, and wasted must equal 24 hours.';
+            $this->addError('form.management', $msg);
+            $this->addError('form.utilized', $msg);
+        }
+    }
+
+    protected function validateTotalHours(): void
+    {
+        $this->recalculateHours();
+    }
+
+    private function calculateSleep(): void
+    {
+        if (! $this->form['yesterday_sleep_time'] || ! $this->form['today_wake_time']) {
+            $this->form['sleep'] = null;
+
+            return;
+        }
+        $yesterday = Carbon::parse($this->form['date'])->subDay();
+        $today = Carbon::parse($this->form['date']);
+
+        $sleepTime = Carbon::parse($yesterday->toDateString().' '.$this->form['yesterday_sleep_time']);
+        $wakeTime = Carbon::parse($today->toDateString().' '.$this->form['today_wake_time']);
+
+        if ($wakeTime->lessThan($sleepTime)) {
+            $wakeTime->addDay();
+        }
+
+        $minutes = $sleepTime->diffInMinutes($wakeTime);
+        $hours = floor($minutes / 60);
+        $mins = $minutes % 60;
+        $this->form['sleep'] = sprintf('%02d:%02d', $hours, $mins);
+    }
+
+    public function updatedFormYesterdaySleepTime()
+    {
+        $this->calculateSleep();
+    }
+
+    public function updatedFormTodayWakeTime()
+    {
+        $this->calculateSleep();
     }
 
     public function save(): mixed
     {
         $this->syncChecklistArray();
+        $this->validateTotalHours();
+
+        if ($this->getErrorBag()->isNotEmpty()) {
+            return null;
+        }
+
         $validated = $this->validate();
         $data = $validated['form'];
         $data['user_id'] = Auth::id();
+        $diary = Diary::create($data);
 
-        Diary::create($data);
+        try {
+            $score = ScoreService::calculateFromDiary($diary);
+            DailyScore::updateOrCreate([
+                'user_id' => $diary->user_id,
+                'date' => $diary->date,
+            ], ['score' => $score]);
+        } catch (\Throwable $e) {
+        }
 
-        session()->flash('status', 'Diary created');
+        session()->flash('status', 'Diary created successfully!');
 
         return redirect()->route('admin.diaries.index');
     }

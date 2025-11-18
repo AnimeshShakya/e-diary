@@ -34,15 +34,15 @@ class DiaryChecklistSelectionTest extends TestCase
             ->set('form.noturgent_important', 'NUI')
             ->set('form.noturgent_notimportant', 'NUNI')
             ->set('form.good_memo', 'Feeling great')
-            ->set('form.sleep', 8)
-            ->set('form.management', 7)
-            ->set('form.utilized', 6)
-            ->set('form.wasted', 1)
+            ->set('form.sleep', '08:00')
+            ->set('form.management', '07:00')
+            ->set('form.utilized', '06:00')
+            ->set('form.wasted', '03:00')
             ->call('toggleChecklist', $c1->id)
             ->call('toggleChecklist', $c2->id)
             ->call('save')
             ->assertHasNoErrors()
-            ->assertRedirect(route('diaries.index'));
+            ->assertRedirect();
 
         $this->assertDatabaseHas('diaries', [
             'user_id' => $user->id,

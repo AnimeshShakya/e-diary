@@ -39,10 +39,10 @@ class Edit extends Component
             'noturgent_important' => $diary->noturgent_important,
             'noturgent_notimportant' => $diary->noturgent_notimportant,
             'good_memo' => $diary->good_memo,
-            'sleep' => $diary->sleep,
-            'management' => $diary->management,
-            'utilized' => $diary->utilized,
-            'wasted' => $diary->wasted,
+            'sleep' => is_numeric($diary->sleep) ? ScoreService::minutesToTime($diary->sleep) : $diary->sleep,
+            'management' => is_numeric($diary->management) ? ScoreService::minutesToTime($diary->management) : $diary->management,
+            'utilized' => is_numeric($diary->utilized) ? ScoreService::minutesToTime($diary->utilized) : $diary->utilized,
+            'wasted' => is_numeric($diary->wasted) ? ScoreService::minutesToTime($diary->wasted) : $diary->wasted,
             'checklist_array' => $diary->checklist_array,
         ];
 
@@ -63,10 +63,10 @@ class Edit extends Component
             'form.noturgent_important' => ['required', 'string'],
             'form.noturgent_notimportant' => ['required', 'string'],
             'form.good_memo' => ['required', 'string'],
-            'form.sleep' => ['required', 'integer'],
-            'form.management' => ['required', 'integer'],
-            'form.utilized' => ['required', 'integer'],
-            'form.wasted' => ['required', 'integer'],
+            'form.sleep' => ['required', 'date_format:H:i'],
+            'form.management' => ['required', 'date_format:H:i'],
+            'form.utilized' => ['required', 'date_format:H:i'],
+            'form.wasted' => ['required', 'date_format:H:i'],
             'form.checklist_array' => ['required', 'string'],
         ];
     }
@@ -74,9 +74,16 @@ class Edit extends Component
     public function save(): mixed
     {
         $this->syncChecklistArray();
-        $this->validate();
+        $validated = $this->validate();
 
-        $this->diary->update($this->form);
+        // Convert HH:MM to minutes for storage
+        $data = $validated['form'];
+        $data['sleep'] = ScoreService::timeToMinutes($data['sleep']);
+        $data['management'] = ScoreService::timeToMinutes($data['management']);
+        $data['utilized'] = ScoreService::timeToMinutes($data['utilized']);
+        $data['wasted'] = ScoreService::timeToMinutes($data['wasted']);
+
+        $this->diary->update($data);
         // update stored score for this diary
         try {
             $score = ScoreService::calculateFromDiary($this->diary->fresh());
