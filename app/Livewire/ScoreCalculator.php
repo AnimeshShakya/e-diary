@@ -14,18 +14,31 @@ use Livewire\Component;
 class ScoreCalculator extends Component
 {
     public $selectedDate;
+
     public $totalChecklist = 0;
+
     public $completedChecklist = 0;
+
     public $sleep = '07:00';
+
     public $management = '01:00';
+
     public $utilized = '16:00';
+
     public $wasted = '00:00';
+
     public $score = 0;
+
     public $hasData = false;
+
     public $mode = 'single';
+
     public $monthlyScores = [];
+
     public $averageScore = 0;
+
     protected $queryString = ['selectedDate' => ['as' => 'date']];
+
     public $detail_data = [];
 
     public function mount($mode = 'single', $date = null)

@@ -40,8 +40,10 @@ class Create extends Component
         $this->form['date'] = now()->toDateString();
         $this->selectedChecklists = [];
         $this->syncChecklistArray();
+        $this->get_previous_time_management_matrix();
     }
 
+    
     protected function rules(): array
     {
         return [
@@ -61,7 +63,7 @@ class Create extends Component
             'form.checklist_array' => ['required', 'string'],
         ];
     }
-
+    
     protected function validationAttributes(): array
     {
         return [
@@ -71,7 +73,18 @@ class Create extends Component
             'form.wasted' => 'wasted hours',
         ];
     }
-
+    
+    public function get_previous_time_management_matrix(): void
+    {
+        $previousDiary = Diary::where('user_id', Auth::id())
+            ->where('date', '<', $this->form['date'])
+            ->orderBy('date', 'desc')
+            ->first();
+        $this->form['urgent_important'] = $previousDiary->urgent_important ?? null;
+        $this->form['urgent_notimportant'] = $previousDiary->urgent_notimportant ?? null;
+        $this->form['noturgent_important'] = $previousDiary->noturgent_important ?? null;
+        $this->form['noturgent_notimportant'] = $previousDiary->noturgent_notimportant ?? null;
+    }
     public function updated($propertyName): void
     {
         if (in_array($propertyName, ['form.sleep', 'form.management', 'form.utilized', 'form.wasted'])) {
@@ -152,6 +165,7 @@ class Create extends Component
     {
         if (! $this->form['yesterday_sleep_time'] || ! $this->form['today_wake_time']) {
             $this->form['sleep'] = null;
+
             return;
         }
         $yesterday = Carbon::parse($this->form['date'])->subDay();
@@ -165,8 +179,8 @@ class Create extends Component
         }
 
         $minutes = $sleepTime->diffInMinutes($wakeTime);
-        if($minutes>21*60){
-            $minutes=21*60;
+        if ($minutes > 21 * 60) {
+            $minutes = 21 * 60;
         }
         $hours = floor($minutes / 60);
         $mins = $minutes % 60;
@@ -181,6 +195,11 @@ class Create extends Component
     public function updatedFormTodayWakeTime()
     {
         $this->calculateSleep();
+    }
+
+    public function updatedFormDate()
+    {
+        $this->get_previous_time_management_matrix();
     }
 
     public function save(): mixed
@@ -240,4 +259,19 @@ class Create extends Component
             'header' => 'Create Diary',
         ];
     }
+
+    public function getIsFormCompleteProperty()
+    {
+        return !empty($this->form['date'])
+            && !empty($this->form['yesterday_sleep_time'])
+            && !empty($this->form['today_wake_time'])
+            && !empty($this->form['sleep'])
+            && !empty($this->form['urgent_important'])
+            && !empty($this->form['urgent_notimportant'])
+            && !empty($this->form['noturgent_important'])
+            && !empty($this->form['noturgent_notimportant'])
+            && !empty($this->form['good_memo'])
+            && !empty($this->form['text']);
+    }
+
 }
