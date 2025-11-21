@@ -1,4 +1,4 @@
-<div class="rounded-2xl border border-gray-800/60 bg-gray-900/30 p-6">
+<div class="rounded-2xl border border-[#2a2a2a]/60 bg-[#111111]/30 p-6">
     <h3 class="text-lg font-semibold mb-4">Affirmation Completion (30 Days)</h3>
     <canvas id="affirmationRateChart"></canvas>
 </div>

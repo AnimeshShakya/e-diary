@@ -17,87 +17,88 @@ class BackfillDailyScores extends Command
 
     public function handle(): int
     {
-        $start = $this->option('start');
-        $end = $this->option('end');
-        $user = $this->option('user');
-        $chunk = (int) $this->option('chunk');
-        $limit = $this->option('limit') ? (int) $this->option('limit') : null;
-
+        $options = $this->parseOptions();
         $this->info('Starting backfill of daily_scores');
-
-        $query = Diary::query();
-
-        if ($user) {
-            $query->where('user_id', $user);
-        }
-
-        if ($start) {
-            $query->where('date', '>=', Carbon::parse($start)->toDateString());
-        }
-
-        if ($end) {
-            $query->where('date', '<=', Carbon::parse($end)->toDateString());
-        }
-
-        $total = $limit ?? $query->count();
-
+        $query = $this->buildDiaryQuery($options);
+        $total = $options['limit'] ?? $query->count();
         $this->info("Processing up to {$total} diary records...");
+        return $options['limit']
+            ? $this->processWithLimit($query, $options)
+            : $this->processInChunks($query, $options);
+    }
 
+    /**
+     * Parse CLI options into an array.
+     */
+    private function parseOptions(): array
+    {
+        return [
+            'start' => $this->option('start'),
+            'end'   => $this->option('end'),
+            'user'  => $this->option('user'),
+            'chunk' => (int) $this->option('chunk'),
+            'limit' => $this->option('limit') ? (int) $this->option('limit') : null,
+        ];
+    }
+
+    /**
+     * Build the Diary query with optional filters.
+     */
+    private function buildDiaryQuery(array $options)
+    {
+        $query = Diary::query();
+        if ($options['user']) {
+            $query->where('user_id', $options['user']);
+        }
+        if ($options['start']) {
+            $query->where('date', '>=', Carbon::parse($options['start'])->toDateString());
+        }
+        if ($options['end']) {
+            $query->where('date', '<=', Carbon::parse($options['end'])->toDateString());
+        }
+        return $query;
+    }
+
+    /**
+     * Process diary records when a limit is specified.
+     */
+    private function processWithLimit($query, array $options): int
+    {
         $processed = 0;
+        $limit = $options['limit'];
 
-        if ($limit) {
-            // iterate with cursor to allow a strict limit
-            $bar = $this->output->createProgressBar($limit);
-            foreach ($query->orderBy('id')->cursor() as $diary) {
-                $score = ScoreService::calculateFromDiary($diary);
-                try {
-                    DailyScore::updateOrCreate([
-                        'user_id' => $diary->user_id,
-                        'date' => $diary->date,
-                    ], ['score' => $score]);
-                } catch (\Throwable $e) {
-                    $this->error("Failed to persist score for diary id={$diary->id}: {$e->getMessage()}");
-                }
+        $bar = $this->output->createProgressBar($limit);
+        foreach ($query->orderBy('id')->cursor() as $diary) {
+            $this->saveScore($diary);
+            $bar->advance();
 
-                $processed++;
-                $bar->advance();
-                if ($processed >= $limit) {
-                    break;
-                }
+            if (++$processed >= $limit) {
+                break;
             }
-
-            $bar->finish();
-            $this->newLine();
-            $this->info("Processed {$processed} diary records");
-
-            return 0;
         }
+        $bar->finish();
+        $this->newLine();
+        $this->info("Processed {$processed} diary records");
+        return 0;
+    }
 
-        // No hard limit: use chunkById for efficient processing
-        $bar = null;
+    /**
+     * Process diaries using chunkById for memory efficiency.
+     */
+    private function processInChunks($query, array $options): int
+    {
+        $processed = 0;
         $count = $query->count();
-        if ($count > 0) {
-            $bar = $this->output->createProgressBar($count);
-        }
-
-        $query->orderBy('id')->chunkById($chunk, function ($diaries) use (&$processed, $bar) {
+        $bar = $count ? $this->output->createProgressBar($count) : null;
+        $query->orderBy('id')->chunkById($options['chunk'], function ($diaries) use (&$processed, $bar) {
             foreach ($diaries as $diary) {
-                $score = ScoreService::calculateFromDiary($diary);
-                try {
-                    DailyScore::updateOrCreate([
-                        'user_id' => $diary->user_id,
-                        'date' => $diary->date,
-                    ], ['score' => $score]);
-                } catch (\Throwable $e) {
-                    $this->error("Failed to persist score for diary id={$diary->id}: {$e->getMessage()}");
-                }
-
+                $this->saveScore($diary);
                 $processed++;
+
                 if ($bar) {
                     $bar->advance();
                 }
             }
-            // free memory
             DB::disconnect();
         });
 
@@ -110,4 +111,25 @@ class BackfillDailyScores extends Command
 
         return 0;
     }
+
+    /**
+     * Centralized score calculation + DB persistence with error handling.
+     */
+    private function saveScore(Diary $diary): void
+    {
+        try {
+            $score = ScoreService::calculateFromDiary($diary);
+
+            DailyScore::updateOrCreate(
+                [
+                    'user_id' => $diary->user_id,
+                    'date'    => $diary->date,
+                ],
+                ['score' => $score]
+            );
+        } catch (\Throwable $e) {
+            $this->error("Failed to persist score for diary id={$diary->id}: {$e->getMessage()}");
+        }
+    }
+
 }

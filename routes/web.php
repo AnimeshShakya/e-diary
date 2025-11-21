@@ -1,81 +1,118 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
-use App\Livewire\Admin\Checklists\Create as AdminChecklistsCreate;
-use App\Livewire\Admin\Checklists\Edit as AdminChecklistsEdit;
-use App\Livewire\Admin\Checklists\Index as AdminChecklistsIndex;
-use App\Livewire\Admin\Dashboard as AdminDashboard;
-use App\Livewire\Admin\Diaries\Create as AdminDiariesCreate;
-use App\Livewire\Admin\Diaries\Edit as AdminDiariesEdit;
-use App\Livewire\Admin\Diaries\Index as AdminDiariesIndex;
-use App\Livewire\Admin\Users\Create as AdminUsersCreate;
-use App\Livewire\Admin\Users\Edit as AdminUsersEdit;
-use App\Livewire\Admin\Users\Index as AdminUsersIndex;
-use App\Livewire\Affirmations\Create as AffirmationsCreate;
-use App\Livewire\Affirmations\Edit as AffirmationsEdit;
-use App\Livewire\Affirmations\Index as AffirmationsIndex;
-use App\Livewire\Dashboard;
-use App\Livewire\Diaries\Create as DiariesCreate;
-use App\Livewire\Diaries\Edit as DiariesEdit;
-use App\Livewire\Diaries\Index as DiariesIndex;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ScoresExportController;
+use App\Livewire\{
+    Dashboard,
+    Diaries\Index as DiariesIndex,
+    Diaries\Create as DiariesCreate,
+    Diaries\Edit as DiariesEdit,
+    Affirmations\Index as AffirmationsIndex,
+    Affirmations\Create as AffirmationsCreate,
+    Affirmations\Edit as AffirmationsEdit,
+    ScoreCalculator,
+    Scores,
+    Admin\Dashboard as AdminDashboard,
+    Admin\Users\Index as AdminUsersIndex,
+    Admin\Users\Create as AdminUsersCreate,
+    Admin\Users\Edit as AdminUsersEdit,
+    Admin\Diaries\Index as AdminDiariesIndex,
+    Admin\Diaries\Create as AdminDiariesCreate,
+    Admin\Diaries\Edit as AdminDiariesEdit,
+    Admin\Checklists\Index as AdminChecklistsIndex,
+    Admin\Checklists\Create as AdminChecklistsCreate,
+    Admin\Checklists\Edit as AdminChecklistsEdit,
+};
 
+// -------------------------------
+// Root Route
+// -------------------------------
 Route::get('/', function () {
-    if (Auth::check()) {
-        $user = Auth::user();
-        if ($user && method_exists($user, 'isAdmin') && $user->isAdmin()) {
-            return redirect()->route('admin.dashboard');
-        }
-
-        return redirect()->route('dashboard');
+    if (!Auth::check()) {
+        return view('welcome');
     }
 
-    // Guests see the welcome page (aligns with auth scaffolding tests)
-    return view('welcome');
+    return Auth::user()->isAdmin()
+        ? redirect()->route('admin.dashboard')
+        : redirect()->route('dashboard');
 });
 
-// Provide a dashboard route for auth scaffolding/tests; redirect based on role to existing pages
+// -------------------------------
+// Dashboard (shared for all users)
+// -------------------------------
 Route::middleware(['auth', 'verified'])->get('/dashboard', Dashboard::class)->name('dashboard');
 
+// -------------------------------
+// Authenticated User Routes
+// -------------------------------
 Route::middleware(['auth', 'verified'])->group(function () {
-    // Password settings page (non-admins can change their own password here)
-    Route::get('/account/password', \App\Livewire\Settings\Password::class)->name('settings.password');
 
-    // Breeze profile routes retained for tests and account management
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    // Non-admin users can create, update, and read diaries (no delete) via Livewire pages
-    Route::get('/diaries', DiariesIndex::class)->name('diaries.index');
-    Route::get('/diaries/create', DiariesCreate::class)->name('diaries.create');
-    Route::get('/diaries/{diary}/edit', DiariesEdit::class)->name('diaries.edit');
+    // --- Account / Profile ---
+    Route::get('/account/password', \App\Livewire\Settings\Password::class)
+        ->name('settings.password');
 
-    // Affirmations - accessible to all authenticated users (admin and non-admin)
-    Route::get('/affirmations', AffirmationsIndex::class)->name('affirmations.index');
-    Route::get('/affirmations/create', AffirmationsCreate::class)->name('affirmations.create');
-    Route::get('/affirmations/{affirmation}/edit', AffirmationsEdit::class)->name('affirmations.edit');
+    Route::controller(ProfileController::class)->group(function () {
+        Route::get('/profile', 'edit')->name('profile.edit');
+        Route::patch('/profile', 'update')->name('profile.update');
+        Route::delete('/profile', 'destroy')->name('profile.destroy');
+    });
 
-    // Score Calculator - accessible to all authenticated users
-    Route::get('/score-calculator/{date}', \App\Livewire\ScoreCalculator::class)->name('score-calculator');
-    // Daily scores page
-    Route::get('/scores', \App\Livewire\Scores::class)->name('scores');
-    // CSV export route for scores (fallback for browsers)
-    Route::get('/scores/export', [\App\Http\Controllers\ScoresExportController::class, 'export'])->name('scores.export');
+    // --- Diaries ---
+    Route::prefix('diaries')->name('diaries.')->group(function () {
+        Route::get('/', DiariesIndex::class)->name('index');
+        Route::get('/create', DiariesCreate::class)->name('create');
+        Route::get('/{diary}/edit', DiariesEdit::class)->name('edit');
+    });
+
+    // --- Affirmations ---
+    Route::prefix('affirmations')->name('affirmations.')->group(function () {
+        Route::get('/', AffirmationsIndex::class)->name('index');
+        Route::get('/create', AffirmationsCreate::class)->name('create');
+        Route::get('/{affirmation}/edit', AffirmationsEdit::class)->name('edit');
+    });
+
+    // --- Score Calculator & Scores ---
+    Route::get('/score-calculator/{date}', ScoreCalculator::class)
+        ->name('score-calculator');
+
+    Route::get('/scores', Scores::class)->name('scores');
+    Route::get('/scores/export', [ScoresExportController::class, 'export'])
+        ->name('scores.export');
 });
 
-Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('/', AdminDashboard::class)->name('dashboard');
-    Route::get('/users', AdminUsersIndex::class)->name('users.index');
-    Route::get('/users/create', AdminUsersCreate::class)->name('users.create');
-    Route::get('/users/{user}/edit', AdminUsersEdit::class)->name('users.edit');
-    Route::get('/diaries', AdminDiariesIndex::class)->name('diaries.index');
-    Route::get('/diaries/create', AdminDiariesCreate::class)->name('diaries.create');
-    Route::get('/diaries/{diary}/edit', AdminDiariesEdit::class)->name('diaries.edit');
-    Route::get('/checklists', AdminChecklistsIndex::class)->name('checklists.index');
-    Route::get('/checklists/create', AdminChecklistsCreate::class)->name('checklists.create');
-    Route::get('/checklists/{checklist}/edit', AdminChecklistsEdit::class)->name('checklists.edit');
-    // Removed unused moderation route
-});
+// -------------------------------
+// Admin Routes
+// -------------------------------
+Route::middleware(['auth', 'verified', 'admin'])
+    ->prefix('admin')
+    ->name('admin.')
+    ->group(function () {
 
-require __DIR__.'/auth.php';
+        Route::get('/', AdminDashboard::class)->name('dashboard');
+
+        // --- Users ---
+        Route::prefix('users')->name('users.')->group(function () {
+            Route::get('/', AdminUsersIndex::class)->name('index');
+            Route::get('/create', AdminUsersCreate::class)->name('create');
+            Route::get('/{user}/edit', AdminUsersEdit::class)->name('edit');
+        });
+
+        // --- Diaries ---
+        Route::prefix('diaries')->name('diaries.')->group(function () {
+            Route::get('/', AdminDiariesIndex::class)->name('index');
+            Route::get('/create', AdminDiariesCreate::class)->name('create');
+            Route::get('/{diary}/edit', AdminDiariesEdit::class)->name('edit');
+        });
+
+        // --- Checklists ---
+        Route::prefix('checklists')->name('checklists.')->group(function () {
+            Route::get('/', AdminChecklistsIndex::class)->name('index');
+            Route::get('/create', AdminChecklistsCreate::class)->name('create');
+            Route::get('/{checklist}/edit', AdminChecklistsEdit::class)->name('edit');
+        });
+    });
+
+// Breeze / Auth
+require __DIR__ . '/auth.php';

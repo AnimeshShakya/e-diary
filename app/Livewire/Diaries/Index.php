@@ -17,9 +17,26 @@ class Index extends Component
 
     public string $search = '';
 
+    public string $searchDate = '';
+
+    public bool $showViewModal = false;
+
+    public ?int $viewId = null;
+
     public function updatingSearch(): void
     {
         $this->resetPage();
+    }
+
+    public function updatingSearchDate(): void
+    {
+        $this->resetPage();
+    }
+
+    public function view(Diary $diary): void
+    {
+        $this->viewId = $diary->id;
+        $this->showViewModal = true;
     }
 
     protected function getDiaries(): LengthAwarePaginator
@@ -34,6 +51,9 @@ class Index extends Component
                         ->orWhere('good_memo', 'like', '%'.$this->search.'%');
                 });
             })
+            ->when($this->searchDate, function ($q) {
+                $q->whereDate('date', $this->searchDate);
+            })
             ->orderByDesc('date')
             ->orderByDesc('created_at')
             ->paginate(10);
@@ -41,8 +61,11 @@ class Index extends Component
 
     public function render(): View
     {
+        $viewDiary = $this->viewId ? Diary::find($this->viewId) : null;
+
         return view('livewire.diaries.index', [
             'diaries' => $this->getDiaries(),
+            'viewDiary' => $viewDiary,
         ]);
     }
 

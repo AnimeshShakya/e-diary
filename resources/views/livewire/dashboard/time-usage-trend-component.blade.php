@@ -1,11 +1,11 @@
 <x-dashboard.card class="hover:border-emerald-500/50">
     <div class="flex items-center justify-between mb-6">
-        <h3 class="text-lg font-semibold text-gray-200">Time Usage Trend (Last 60 Days)</h3>
-        <span class="text-sm text-gray-400">Hours per Day</span>
+        <h3 class="text-lg font-semibold text-[#e2e8f0]">Time Usage Trend (Last 60 Days)</h3>
+        <span class="text-sm text-[#94a3b8]">Hours per Day</span>
     </div>
 
     @php
-        $labels = $chart['labels'] ?? [];
+        $labels   = $chart['labels'] ?? [];
         $datasets = $chart['datasets'] ?? [];
     @endphp
 
@@ -15,7 +15,7 @@
         </div>
     @else
         <div class="text-center py-12">
-            <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-800/50 flex items-center justify-center">
+            <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-[#1a1a1a]/50 flex items-center justify-center">
                 <svg class="w-8 h-8 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
                           d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -35,39 +35,29 @@
 
                 const labels = @json($labels);
                 const datasets = @json($datasets);
-                
-                if (!labels || labels.length === 0) return;
+
+                if (!labels.length) return;
 
                 const ctx = el.getContext('2d');
-                new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: datasets.map((dataset) => {
-                            const colors = {
-                                'Sleep (avg)': { border: '#A78BFA', bg: 'rgba(167, 139, 250, 0.1)' },
-                                'Sleep (MA7)': { border: '#F59E0B', bg: 'rgba(245, 158, 11, 0.1)' },
-                                'Management (avg)': { border: '#34D399', bg: 'rgba(52, 211, 153, 0.1)' }
-                            };
-                            
-                            const color = colors[dataset.label] || { border: '#6366F1', bg: 'rgba(99, 102, 241, 0.1)' };
 
-                            return {
-                                label: dataset.label,
-                                data: dataset.data,
-                                borderColor: color.border,
-                                backgroundColor: color.bg,
-                                borderWidth: 2,
-                                borderDash: dataset.borderDash || [],
-                                fill: true,
-                                tension: 0.4,
-                                pointRadius: 0,
-                                pointHoverRadius: 5,
-                                pointHoverBackgroundColor: color.border,
-                                pointHoverBorderColor: '#fff',
-                                pointHoverBorderWidth: 2
-                            };
-                        })
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: datasets.map(ds => ({
+                            label: ds.label,
+                            data: ds.data,
+                            borderColor: ds.borderColor,
+                            backgroundColor: ds.borderColor + '20',
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 0,
+                            pointHoverRadius: 5,
+                            pointHoverBackgroundColor: ds.borderColor,
+                            pointHoverBorderColor: '#fff',
+                            pointHoverBorderWidth: 2
+                        }))
                     },
                     options: {
                         responsive: true,
@@ -81,9 +71,7 @@
                                     color: '#e5e7eb',
                                     font: { size: 12, weight: '500' },
                                     usePointStyle: true,
-                                    padding: 15,
-                                    boxWidth: 8,
-                                    boxHeight: 8
+                                    padding: 15
                                 }
                             },
                             tooltip: {
@@ -96,8 +84,7 @@
                                 padding: 12,
                                 callbacks: {
                                     label: function(context) {
-                                        return context.dataset.label + ': ' + 
-                                               (context.parsed.y !== null ? context.parsed.y.toFixed(1) + ' hrs' : 'N/A');
+                                        return `${context.dataset.label}: ${context.parsed.y?.toFixed(1)} hrs`;
                                     }
                                 }
                             }
@@ -120,32 +107,27 @@
                                 ticks: {
                                     color: '#71717a',
                                     font: { size: 11 },
-                                    callback: function(value) { return value + 'h'; }
+                                    callback: (value) => value + 'h'
                                 },
-                                suggestedMax: 24
+                                suggestedMax: 15
                             }
                         },
                         animation: { duration: 800, easing: 'easeOutQuart' }
                     }
-                    });
-                };
-
-                // Initialize chart immediately or after Chart.js loads
-                if (window.Chart) {
-                    init();
-                } else {
-                    const s = document.createElement('script');
-                    s.src = 'https://cdn.jsdelivr.net/npm/chart.js';
-                    s.onload = init;
-                    document.head.appendChild(s);
-                }
-                
-                // Also listen for dynamic updates
-                Livewire.on('chart-data-loaded-time-usage', () => {
-                    if (window.Chart) {
-                        init();
-                    }
                 });
-            })();
-        </script>
-    </x-dashboard.card>
+            };
+
+            if (window.Chart) init();
+            else {
+                const s = document.createElement('script');
+                s.src = 'https://cdn.jsdelivr.net/npm/chart.js';
+                s.onload = init;
+                document.head.appendChild(s);
+            }
+
+            Livewire.on('chart-data-loaded-time-usage', () => {
+                if (window.Chart) init();
+            });
+        })();
+    </script>
+</x-dashboard.card>

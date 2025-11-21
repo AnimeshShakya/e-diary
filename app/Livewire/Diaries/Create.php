@@ -5,6 +5,7 @@ namespace App\Livewire\Diaries;
 use App\Models\Checklist;
 use App\Models\DailyScore;
 use App\Models\Diary;
+use App\Models\TimeUsageTrend;
 use App\Services\ScoreService;
 use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
@@ -85,6 +86,7 @@ class Create extends Component
         $this->form['noturgent_important'] = $previousDiary->noturgent_important ?? null;
         $this->form['noturgent_notimportant'] = $previousDiary->noturgent_notimportant ?? null;
     }
+
     public function updated($propertyName): void
     {
         if (in_array($propertyName, ['form.sleep', 'form.management', 'form.utilized', 'form.wasted'])) {
@@ -93,6 +95,27 @@ class Create extends Component
             $this->validateOnly($propertyName);
         }
     }
+
+    private const DAY_MINUTES = 1440;
+
+    private function getMinutes(string $field): int
+    {
+        $value = trim($this->form[$field] ?? '00:00') ?: '00:00';
+        return ScoreService::timeToMinutes($value);
+    }
+
+    private function validateLimit(string $field, int $actual, int $max, string $context): void
+    {
+        if ($actual > $max) {
+            $this->addError(
+                "form.$field",
+                ucfirst($field).' hours cannot exceed '.
+                ScoreService::minutesToTime($max).
+                " based on $context."
+            );
+        }
+    }
+
 
     public function recalculateHours(): void
     {
@@ -103,34 +126,17 @@ class Create extends Component
             'form.wasted',
         ]);
 
-        $sleepStr = trim($this->form['sleep'] ?? '00:00') ?: '00:00';
-        $managementStr = trim($this->form['management'] ?? '00:00') ?: '00:00';
-        $utilizedStr = trim($this->form['utilized'] ?? '00:00') ?: '00:00';
+        $sleepM      = $this->getMinutes('sleep');
+        $managementM = $this->getMinutes('management');
+        $utilizedM   = $this->getMinutes('utilized');
 
-        $sleepM = ScoreService::timeToMinutes($sleepStr);
-        $managementM = ScoreService::timeToMinutes($managementStr);
-        $utilizedM = ScoreService::timeToMinutes($utilizedStr);
-
-        $wastedM = 24 * 60 - ($sleepM + $managementM + $utilizedM);
-        $wastedM = max(0, $wastedM);
+        $wastedM = max(0, self::DAY_MINUTES - ($sleepM + $managementM + $utilizedM));
         $this->form['wasted'] = ScoreService::minutesToTime($wastedM);
 
-        $maxManagementM = 24 * 60 - $sleepM - $utilizedM;
-        if ($managementM > $maxManagementM) {
-            $this->addError('form.management',
-                'Management hours cannot exceed '.ScoreService::minutesToTime($maxManagementM).' based on sleep & utilized.'
-            );
-        }
+        $this->validateLimit('management', $managementM, self::DAY_MINUTES - $sleepM - $utilizedM, 'sleep & utilized');
+        $this->validateLimit('utilized', $utilizedM, self::DAY_MINUTES - $sleepM - $managementM, 'sleep & management');
 
-        $maxUtilizedM = 24 * 60 - $sleepM - $managementM;
-        if ($utilizedM > $maxUtilizedM) {
-            $this->addError('form.utilized',
-                'Utilized hours cannot exceed '.ScoreService::minutesToTime($maxUtilizedM).' based on sleep & management.'
-            );
-        }
-
-        $totalM = $sleepM + $managementM + $utilizedM + $wastedM;
-        if ($totalM !== 24 * 60) {
+        if ($sleepM + $managementM + $utilizedM + $wastedM !== self::DAY_MINUTES) {
             $msg = 'The total of sleep, management, utilized, and wasted must equal 24 hours.';
             $this->addError('form.management', $msg);
             $this->addError('form.utilized', $msg);
@@ -215,6 +221,23 @@ class Create extends Component
         $data = $validated['form'];
         $data['user_id'] = Auth::id();
         $diary = Diary::create($data);
+
+        $diary_sleep_min = $this->getMinutes('sleep');
+        $diary_management_min = $this->getMinutes('management');
+        $diary_utilized_min = $this->getMinutes('utilized');
+        $diary_wasted_min = self::DAY_MINUTES - ($diary_sleep_min + $diary_management_min + $diary_utilized_min);
+        $save_to_time_usage_trends = [
+            'id' => $diary->id,
+            'user_id' => $diary->user_id,
+            'date' => $diary->date,
+            'sleep_min' => $diary_sleep_min,
+            'management_min' => $diary_management_min,
+            'utilized_min' => $diary_utilized_min,
+            'wasted_min' => $diary_wasted_min,
+        ];
+        TimeUsageTrend::updateOrCreate(
+            $save_to_time_usage_trends
+        );
 
         try {
             $score = ScoreService::calculateFromDiary($diary);

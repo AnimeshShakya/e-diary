@@ -13,7 +13,7 @@
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {{-- Total Users Card --}}
         <div 
-            class="group relative p-6 h-100 rounded-2xl bg-gradient-to-br from-[#1a1a1a] to-[#111111] border border-gray-800/50 hover:border-indigo-500/50 transition-all duration-300 overflow-hidden animate-fade-in-up"
+            class="group relative p-6 h-100 rounded-2xl bg-gradient-to-br from-[#1a1a1a] to-[#111111] border border-[#2a2a2a]/50 hover:border-[#6366f1]/40 transition-all duration-300 overflow-hidden animate-fade-in-up"
             style="animation-delay: 0ms"
         >
             {{-- Glow effect --}}
@@ -21,7 +21,7 @@
             
             <div class="relative z-10">
                 <div class="flex items-center justify-between mb-4">
-                    <div class="p-3 rounded-xl bg-indigo-500/10 group-hover:bg-indigo-500/20 transition-colors">
+                    <div class="p-3 rounded-xl bg-indigo-500/10 group-hover:bg-[#5558e3]/20 transition-colors">
                         <svg class="w-6 h-6 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
                         </svg>
@@ -34,7 +34,7 @@
 
         {{-- Total Diaries Card --}}
         <div 
-            class="group relative p-6 rounded-2xl bg-gradient-to-br from-[#1a1a1a] to-[#111111] border border-gray-800/50 hover:border-purple-500/50 transition-all duration-300 overflow-hidden animate-fade-in-up"
+            class="group relative p-6 rounded-2xl bg-gradient-to-br from-[#1a1a1a] to-[#111111] border border-[#2a2a2a]/50 hover:border-purple-500/50 transition-all duration-300 overflow-hidden animate-fade-in-up"
             style="animation-delay: 100ms"
         >
             <div class="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-pink-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -54,7 +54,7 @@
 
         {{-- Flagged Content Card --}}
         <div 
-            class="group relative p-6 rounded-2xl bg-gradient-to-br from-[#1a1a1a] to-[#111111] border border-gray-800/50 hover:border-red-500/50 transition-all duration-300 overflow-hidden animate-fade-in-up"
+            class="group relative p-6 rounded-2xl bg-gradient-to-br from-[#1a1a1a] to-[#111111] border border-[#2a2a2a]/50 hover:border-red-500/50 transition-all duration-300 overflow-hidden animate-fade-in-up"
             style="animation-delay: 200ms"
         >
             <div class="absolute inset-0 bg-gradient-to-br from-red-500/5 to-orange-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -80,9 +80,9 @@
 
     {{-- Quick Actions --}}
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 animate-fade-in-up" style="animation-delay: 400ms">
-        <a href="{{ route('admin.users.index') }}" class="p-4 rounded-xl bg-gradient-to-br from-[#1a1a1a] to-[#111111] border border-gray-800/50 hover:border-indigo-500/50 transition-all duration-300 group">
+        <a href="{{ route('admin.users.index') }}" class="p-4 rounded-xl bg-gradient-to-br from-[#1a1a1a] to-[#111111] border border-[#2a2a2a]/50 hover:border-[#6366f1]/40 transition-all duration-300 group">
             <div class="flex items-center gap-3">
-                <div class="p-2 rounded-lg bg-indigo-500/10 group-hover:bg-indigo-500/20 transition-colors">
+                <div class="p-2 rounded-lg bg-indigo-500/10 group-hover:bg-[#5558e3]/20 transition-colors">
                     <svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
                     </svg>
@@ -91,7 +91,7 @@
             </div>
         </a>
 
-        <a href="{{ route('admin.diaries.index') }}" class="p-4 rounded-xl bg-gradient-to-br from-[#1a1a1a] to-[#111111] border border-gray-800/50 hover:border-purple-500/50 transition-all duration-300 group">
+        <a href="{{ route('admin.diaries.index') }}" class="p-4 rounded-xl bg-gradient-to-br from-[#1a1a1a] to-[#111111] border border-[#2a2a2a]/50 hover:border-purple-500/50 transition-all duration-300 group">
             <div class="flex items-center gap-3">
                 <div class="p-2 rounded-lg bg-purple-500/10 group-hover:bg-purple-500/20 transition-colors">
                     <svg class="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -104,7 +104,7 @@
 
         @php($moderationUrl = Route::has('admin.moderation') ? route('admin.moderation') : null)
         @if($moderationUrl)
-            <a href="{{ $moderationUrl }}" class="p-4 rounded-xl bg-gradient-to-br from-[#1a1a1a] to-[#111111] border border-gray-800/50 hover:border-red-500/50 transition-all duration-300 group">
+            <a href="{{ $moderationUrl }}" class="p-4 rounded-xl bg-gradient-to-br from-[#1a1a1a] to-[#111111] border border-[#2a2a2a]/50 hover:border-red-500/50 transition-all duration-300 group">
                 <div class="flex items-center gap-3">
                     <div class="p-2 rounded-lg bg-red-500/10 group-hover:bg-red-500/20 transition-colors">
                         <svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -115,7 +115,7 @@
                 </div>
             </a>
         @else
-            <div class="p-4 rounded-xl bg-gradient-to-br from-[#1a1a1a] to-[#111111] border border-gray-800/50 opacity-60 cursor-not-allowed">
+            <div class="p-4 rounded-xl bg-gradient-to-br from-[#1a1a1a] to-[#111111] border border-[#2a2a2a]/50 opacity-60 cursor-not-allowed">
                 <div class="flex items-center gap-3">
                     <div class="p-2 rounded-lg bg-red-500/5">
                         <svg class="w-5 h-5 text-red-400/80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -127,10 +127,10 @@
             </div>
         @endif
 
-        <button class="p-4 rounded-xl bg-gradient-to-br from-[#1a1a1a] to-[#111111] border border-gray-800/50 hover:border-gray-700 transition-all duration-300 group text-left">
+        <button class="p-4 rounded-xl bg-gradient-to-br from-[#1a1a1a] to-[#111111] border border-[#2a2a2a]/50 hover:border-gray-700 transition-all duration-300 group text-left">
             <div class="flex items-center gap-3">
                 <div class="p-2 rounded-lg bg-gray-700/10 group-hover:bg-gray-700/20 transition-colors">
-                    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-5 h-5 text-[#94a3b8]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                     </svg>
                 </div>

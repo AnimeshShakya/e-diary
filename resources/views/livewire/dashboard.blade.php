@@ -10,7 +10,7 @@
         @livewire('dashboard.monthly-checklist-bar')
         @livewire('dashboard.yearly-checklist-comparison')
         <div>
-            @livewire('dashboard.time-usage-trend')
+            @livewire('dashboard.time-usage-trend-component')
         </div>
     </div>
 </div>

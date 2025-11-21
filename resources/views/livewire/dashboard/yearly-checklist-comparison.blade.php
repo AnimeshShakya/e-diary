@@ -1,7 +1,7 @@
 <x-dashboard.card class="hover:border-purple-500/50">
     <div class="flex items-center justify-between mb-6">
-        <h3 class="text-lg font-semibold text-gray-200">Yearly Checklist Comparison</h3>
-        <span class="text-sm text-gray-400">Completion Rate (%)</span>
+        <h3 class="text-lg font-semibold text-[#e2e8f0]">Yearly Checklist Comparison</h3>
+        <span class="text-sm text-[#94a3b8]">Completion Rate (%)</span>
     </div>
 
     @php
@@ -16,7 +16,7 @@
         </div>
     @else
             <div class="text-center py-12">
-                <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-800/50 flex items-center justify-center">
+                <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-[#1a1a1a]/50 flex items-center justify-center">
                     <svg class="w-8 h-8 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
                               d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>

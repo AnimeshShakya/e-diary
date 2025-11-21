@@ -17,7 +17,7 @@ Schedule::command('diary:send-reminders')
 
 // Schedule backfill of daily_scores to run nightly during off-peak hours
 Schedule::command('backfill:daily-scores')
-    ->dailyAt('02:00')
+    ->dailyAt('1:10')
     ->timezone('Asia/Kathmandu')
     ->withoutOverlapping()
     ->runInBackground();
