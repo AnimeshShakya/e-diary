@@ -22,6 +22,7 @@ class BackfillDailyScores extends Command
         $query = $this->buildDiaryQuery($options);
         $total = $options['limit'] ?? $query->count();
         $this->info("Processing up to {$total} diary records...");
+
         return $options['limit']
             ? $this->processWithLimit($query, $options)
             : $this->processInChunks($query, $options);
@@ -34,8 +35,8 @@ class BackfillDailyScores extends Command
     {
         return [
             'start' => $this->option('start'),
-            'end'   => $this->option('end'),
-            'user'  => $this->option('user'),
+            'end' => $this->option('end'),
+            'user' => $this->option('user'),
             'chunk' => (int) $this->option('chunk'),
             'limit' => $this->option('limit') ? (int) $this->option('limit') : null,
         ];
@@ -56,6 +57,7 @@ class BackfillDailyScores extends Command
         if ($options['end']) {
             $query->where('date', '<=', Carbon::parse($options['end'])->toDateString());
         }
+
         return $query;
     }
 
@@ -79,6 +81,7 @@ class BackfillDailyScores extends Command
         $bar->finish();
         $this->newLine();
         $this->info("Processed {$processed} diary records");
+
         return 0;
     }
 
@@ -123,7 +126,7 @@ class BackfillDailyScores extends Command
             DailyScore::updateOrCreate(
                 [
                     'user_id' => $diary->user_id,
-                    'date'    => $diary->date,
+                    'date' => $diary->date,
                 ],
                 ['score' => $score]
             );
@@ -131,5 +134,4 @@ class BackfillDailyScores extends Command
             $this->error("Failed to persist score for diary id={$diary->id}: {$e->getMessage()}");
         }
     }
-
 }

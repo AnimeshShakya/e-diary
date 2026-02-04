@@ -1,7 +1,7 @@
 <x-dashboard.card class="hover:border-emerald-500/50">
-    <div class="flex items-center justify-between mb-6">
-        <h3 class="text-lg font-semibold text-[#e2e8f0]">Time Usage Trend (Last 60 Days)</h3>
-        <span class="text-sm text-[#94a3b8]">Hours per Day</span>
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 sm:mb-6 gap-2">
+        <h3 class="text-base sm:text-lg font-semibold text-[#e2e8f0]">Time Usage Trend (Last 60 Days)</h3>
+        <span class="text-xs sm:text-sm text-[#94a3b8]">Hours per Day</span>
     </div>
 
     @php
@@ -10,18 +10,18 @@
     @endphp
 
     @if(count($labels) > 0)
-        <div class="relative w-full h-96">
+        <div class="relative w-full h-64 sm:h-80 lg:h-96">
             <canvas id="timeUsageTrendChart"></canvas>
         </div>
     @else
-        <div class="text-center py-12">
-            <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-[#1a1a1a]/50 flex items-center justify-center">
-                <svg class="w-8 h-8 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="text-center py-8 sm:py-12">
+            <div class="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-3 sm:mb-4 rounded-full bg-[#1a1a1a]/50 flex items-center justify-center">
+                <svg class="w-6 h-6 sm:w-8 sm:h-8 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
                           d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
             </div>
-            <p class="text-gray-500 text-sm">No time usage data for the last 60 days</p>
+            <p class="text-gray-500 text-xs sm:text-sm">No time usage data for the last 60 days</p>
         </div>
     @endif
 

@@ -1,13 +1,14 @@
-<div class="space-y-6 animate-fade-in-up">
-    <div class="flex items-center justify-between">
+<div class="space-y-4 sm:space-y-6 animate-fade-in-up">
+    <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
         <div class="flex items-center gap-3">
-            <input type="text" wire:model.live="search" placeholder="Search checklists..." class="rounded-xl border-gray-800 bg-gray-900/40 text-gray-200 focus:border-indigo-500 focus:ring-indigo-500" />
+            <input type="text" wire:model.live="search" placeholder="Search checklists..." class="w-full sm:w-auto rounded-xl border-gray-800 bg-gray-900/40 text-gray-200 focus:border-indigo-500 focus:ring-indigo-500" />
         </div>
-        <a href="{{ route('admin.checklists.create') }}" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white">New Checklist</a>
+        <a href="{{ route('admin.checklists.create') }}" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-center">New Checklist</a>
     </div>
 
     <div class="overflow-hidden rounded-2xl border border-gray-800/60 bg-gray-900/30">
-        <table class="min-w-full text-sm">
+        <div class="overflow-x-auto">
+            <table class="min-w-full text-xs sm:text-sm">
             <thead class="bg-gray-900/50">
                 <tr>
                     <th class="px-6 py-3 text-left">Name</th>
@@ -27,12 +28,13 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="3" class="px-6 py-6 text-center text-gray-400">No checklists found.</td>
+                    <td colspan="3" class="px-3 sm:px-6 py-6 text-center text-gray-400 text-xs sm:text-sm">No checklists found.</td>
                 </tr>
             @endforelse
             </tbody>
         </table>
-        <div class="px-6 py-4 border-t border-gray-800/60">{{ $checklists->links() }}</div>
+        </div>
+        <div class="px-3 sm:px-6 py-3 sm:py-4 border-t border-gray-800/60">{{ $checklists->links() }}</div>
     </div>
 
     <!-- Delete Confirmation Modal -->

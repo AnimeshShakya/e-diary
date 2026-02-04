@@ -5,7 +5,7 @@
     </div>
 
     {{-- Lifestyle Dashboard Widgets --}}
-    <div class="grid grid-cols-1 gap-6">
+    <div class="grid grid-cols-1 gap-4 sm:gap-6">
         {{-- Render each widget full width --}}
         @livewire('dashboard.monthly-checklist-bar')
         @livewire('dashboard.yearly-checklist-comparison')

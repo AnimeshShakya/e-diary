@@ -30,7 +30,7 @@
         }
     </style>
 </head>
-<body class="bg-[#0c0c0c] text-gray-100 font-sans antialiased" x-data="{ sidebarOpen: true }">
+<body class="bg-[#0c0c0c] text-gray-100 font-sans antialiased" x-data="{ sidebarOpen: false }">
     @php
         $user = auth()->user();
         $isAdmin = $user && method_exists($user, 'isAdmin') && $user->isAdmin();
@@ -53,18 +53,29 @@
             class="fixed lg:sticky top-0 h-screen w-64 bg-gradient-to-b from-[#111111] to-[#0a0a0a] backdrop-blur-xl border-r border-gray-800/50 z-50 flex flex-col shadow-2xl"
         >
             {{-- Logo Section --}}
-            <div class="p-6 border-b border-gray-800/50">
-                <a href="{{ $homeRoute }}" class="flex items-center gap-3 group">
-                    <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg group-hover:shadow-indigo-500/50 transition-all duration-300">
-                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+            <div class="p-4 sm:p-6 border-b border-gray-800/50">
+                <div class="flex items-center justify-between">
+                    <a href="{{ $homeRoute }}" class="flex items-center gap-2 sm:gap-3 group">
+                        <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg group-hover:shadow-indigo-500/50 transition-all duration-300">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="font-semibold text-lg">Daily Diary</div>
+                            <div class="text-xs text-gray-500">{{ $panelSubtitle }}</div>
+                        </div>
+                    </a>
+                    <button 
+                        @click="sidebarOpen = false"
+                        class="p-2 rounded-xl hover:bg-gray-800/50 transition-colors text-gray-400 hover:text-gray-200"
+                        title="Close sidebar"
+                    >
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                         </svg>
-                    </div>
-                    <div>
-                        <div class="font-semibold text-lg">Daily Diary</div>
-                        <div class="text-xs text-gray-500">{{ $panelSubtitle }}</div>
-                    </div>
-                </a>
+                    </button>
+                </div>
             </div>
 
             {{-- Navigation --}}
@@ -144,7 +155,8 @@
                     <div class="flex items-center gap-4">
                         <button 
                             @click="sidebarOpen = !sidebarOpen"
-                            class="p-2 rounded-xl hover:bg-gray-800/50 transition-colors lg:hidden"
+                            class="p-2 rounded-xl hover:bg-gray-800/50 transition-colors"
+                            title="Toggle sidebar"
                         >
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>

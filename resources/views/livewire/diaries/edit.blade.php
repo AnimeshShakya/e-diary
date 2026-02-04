@@ -1,7 +1,7 @@
-<div class="space-y-6 animate-fade-in-up">
+<div class="space-y-4 sm:space-y-6 animate-fade-in-up">
     <div class="overflow-hidden rounded-2xl border border-gray-800/60 bg-gray-900/30">
-        <div class="p-6">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="p-4 sm:p-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
                 <div>
                     <label class="block text-sm text-gray-400 mb-1">Date</label>
                     <input type="date" wire:model.defer="form.date" class="w-full rounded-xl border-gray-800 bg-gray-900/40 text-gray-200 focus:border-indigo-500 focus:ring-indigo-500" />
@@ -85,10 +85,10 @@
                 </div>
                 <div class="md:col-span-2">
                     <label class="block text-sm text-gray-400 mb-1">Checklist</label>
-                    <div class="flex flex-wrap gap-2">
+                    <div class="flex flex-wrap gap-1.5 sm:gap-2">
                         @forelse($checklists as $c)
                             <button type="button" wire:click="toggleChecklist({{ $c->id }})"
-                                    class="px-3 py-1.5 rounded-full border text-sm transition
+                                    class="px-2.5 sm:px-3 py-1.5 rounded-full border text-xs sm:text-sm transition
                                     {{ in_array($c->id, $selectedChecklists ?? [])
                                         ? 'bg-indigo-600 border-indigo-500 text-white'
                                         : 'bg-gray-900/40 border-gray-800 text-gray-300 hover:bg-gray-800/60' }}">
@@ -103,8 +103,8 @@
                 </div>
             </div>
         </div>
-        <div class="px-6 py-4 border-t border-gray-800/60 flex items-center justify-end gap-3">
-            <a href="{{ route('diaries.index') }}" class="px-4 py-2 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-200">Cancel</a>
+        <div class="px-4 sm:px-6 py-3 sm:py-4 border-t border-gray-800/60 flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-2 sm:gap-3">
+            <a href="{{ route('diaries.index') }}" class="px-4 py-2 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-200 text-center">Cancel</a>
             <button wire:click="save" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white">Save</button>
         </div>
     </div>

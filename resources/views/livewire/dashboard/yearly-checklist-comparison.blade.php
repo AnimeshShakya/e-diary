@@ -1,7 +1,7 @@
 <x-dashboard.card class="hover:border-purple-500/50">
-    <div class="flex items-center justify-between mb-6">
-        <h3 class="text-lg font-semibold text-[#e2e8f0]">Yearly Checklist Comparison</h3>
-        <span class="text-sm text-[#94a3b8]">Completion Rate (%)</span>
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 sm:mb-6 gap-2">
+        <h3 class="text-base sm:text-lg font-semibold text-[#e2e8f0]">Yearly Checklist Comparison</h3>
+        <span class="text-xs sm:text-sm text-[#94a3b8]">Completion Rate (%)</span>
     </div>
 
     @php
@@ -11,18 +11,18 @@
 
     @if(count($datasets) > 0)
         {{-- Chart --}}
-        <div class="relative w-full h-80">
+        <div class="relative w-full h-64 sm:h-72 lg:h-80">
             <canvas id="yearlyChecklistChart"></canvas>
         </div>
     @else
-            <div class="text-center py-12">
-                <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-[#1a1a1a]/50 flex items-center justify-center">
-                    <svg class="w-8 h-8 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="text-center py-8 sm:py-12">
+            <div class="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-3 sm:mb-4 rounded-full bg-[#1a1a1a]/50 flex items-center justify-center">
+                    <svg class="w-6 h-6 sm:w-8 sm:h-8 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
                               d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                     </svg>
                 </div>
-            <p class="text-gray-500 text-sm">No yearly checklist data available</p>
+            <p class="text-gray-500 text-xs sm:text-sm">No yearly checklist data available</p>
         </div>
     @endif
 

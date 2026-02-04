@@ -30,12 +30,26 @@
         }
     </style>
 </head>
-<body class="bg-[#0c0c0c] text-gray-100 font-sans antialiased" x-data="{ sidebarOpen: true }">
+<body class="bg-[#0c0c0c] text-gray-100 font-sans antialiased" x-data="{ sidebarOpen: false }">
     @php
         $user = auth()->user();
     @endphp
 
     <div class="min-h-screen flex">
+        {{-- Mobile Overlay --}}
+        <div 
+            x-show="sidebarOpen" 
+            x-cloak
+            @click="sidebarOpen = false"
+            class="fixed inset-0 bg-black/60 z-40 lg:hidden"
+            x-transition:enter="transition-opacity ease-out duration-300"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100"
+            x-transition:leave="transition-opacity ease-in duration-300"
+            x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0"
+        ></div>
+        
         {{-- Floating Sidebar --}}
         <aside 
             x-show="sidebarOpen"
@@ -48,22 +62,33 @@
             class="fixed lg:sticky top-0 h-screen w-64 bg-gradient-to-b from-[#111111] to-[#0a0a0a] backdrop-blur-xl border-r border-gray-800/50 z-50 flex flex-col shadow-2xl"
         >
             {{-- Logo Section --}}
-            <div class="p-6 border-b border-gray-800/50">
-                <a href="{{ route('dashboard') }}" class="flex items-center gap-3 group">
-                    <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg group-hover:shadow-indigo-500/50 transition-all duration-300">
-                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+            <div class="p-4 sm:p-6 border-b border-gray-800/50">
+                <div class="flex items-center justify-between">
+                    <a href="{{ route('dashboard') }}" class="flex items-center gap-2 sm:gap-3 group">
+                        <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg group-hover:shadow-indigo-500/50 transition-all duration-300">
+                            <svg class="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="font-semibold text-base sm:text-lg">Daily Diary</div>
+                            <div class="text-xs text-gray-500">Dashboard</div>
+                        </div>
+                    </a>
+                    <button 
+                        @click="sidebarOpen = false"
+                        class="p-2 rounded-xl hover:bg-gray-800/50 transition-colors text-gray-400 hover:text-gray-200"
+                        title="Close sidebar"
+                    >
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                         </svg>
-                    </div>
-                    <div>
-                        <div class="font-semibold text-lg">Daily Diary</div>
-                        <div class="text-xs text-gray-500">Dashboard</div>
-                    </div>
-                </a>
+                    </button>
+                </div>
             </div>
 
             {{-- Navigation --}}
-            <nav class="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
+            <nav class="flex-1 px-3 sm:px-4 py-4 sm:py-6 space-y-1 sm:space-y-2 overflow-y-auto">
                 <x-admin.sidebar-link href="{{ route('dashboard') }}" icon="home">
                     Dashboard
                 </x-admin.sidebar-link>
@@ -112,19 +137,20 @@
         <div class="flex-1 flex flex-col min-h-screen">
             {{-- Top Navbar --}}
             <header class="sticky top-0 z-40 bg-[#0c0c0c]/80 backdrop-blur-xl border-b border-gray-800/50">
-                <div class="flex items-center justify-between px-6 py-4">
+                <div class="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4">
                     {{-- Breadcrumb & Sidebar Toggle --}}
-                    <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-2 sm:gap-4 min-w-0">
                         <button 
                             @click="sidebarOpen = !sidebarOpen"
-                            class="p-2 rounded-xl hover:bg-gray-800/50 transition-colors lg:hidden"
+                            class="p-2 rounded-xl hover:bg-gray-800/50 transition-colors flex-shrink-0"
+                            title="Toggle sidebar"
                         >
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
                             </svg>
                         </button>
                         @isset($header)
-                            <h1 class="text-xl font-semibold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
+                            <h1 class="text-base sm:text-xl font-semibold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent truncate">
                                 {{ $header }}
                             </h1>
                         @endisset
@@ -138,12 +164,12 @@
             </header>
 
             {{-- Main Content --}}
-            <main class="flex-1 p-6 lg:p-8 overflow-auto">
+            <main class="flex-1 p-4 sm:p-6 lg:p-8 overflow-auto">
                 {{ $slot }}
             </main>
 
             {{-- Footer --}}
-            <footer class="px-6 py-4 border-t border-gray-800/50 text-center text-xs text-gray-500">
+            <footer class="px-4 sm:px-6 py-3 sm:py-4 border-t border-gray-800/50 text-center text-xs text-gray-500">
                 © {{ date('Y') }} Daily Diary. All rights reserved.
             </footer>
         </div>

@@ -3,8 +3,8 @@
 namespace App\Livewire;
 
 use App\Models\Checklist;
-use App\Models\Diary;
 use App\Models\DailyScore;
+use App\Models\Diary;
 use App\Services\ScoreService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -19,20 +19,27 @@ class ScoreCalculator extends Component
     public $selectedDate;
 
     public $totalChecklist = 0;
+
     public $completedChecklist = 0;
 
     public $sleep = '07:00';
+
     public $management = '01:00';
+
     public $utilized = '16:00';
+
     public $wasted = '00:00';
 
     public $score = 0;
+
     public $hasData = false;
 
     public $mode = 'single';
 
     public $monthlyScores = [];
+
     public $averageScore = 0;
+
     public $stats = [];
 
     public $dailyScores = [];
@@ -64,7 +71,7 @@ class ScoreCalculator extends Component
     public function loadMonthlyData()
     {
         $startDate = Carbon::now()->subDays(7)->toDateString();
-        $endDate   = Carbon::now()->toDateString();
+        $endDate = Carbon::now()->toDateString();
 
         $this->monthlyScores = [];
         $totalScore = 0;
@@ -85,11 +92,12 @@ class ScoreCalculator extends Component
                 ->whereBetween('date', [$startDate, $endDate])
                 ->orderBy('date', 'desc')
                 ->get()
-                ->map(function($diary) {
+                ->map(function ($diary) {
                     $scoreData = ScoreService::calculateFromDiary($diary);
-                    return (object)[
+
+                    return (object) [
                         'date' => $diary->date,
-                        'score' => $scoreData['round']
+                        'score' => $scoreData['round'],
                     ];
                 });
         }
@@ -100,10 +108,10 @@ class ScoreCalculator extends Component
             $dateObj = Carbon::parse($r->date);
 
             $this->monthlyScores[] = [
-                'date'     => $dateObj->format('M d'),
+                'date' => $dateObj->format('M d'),
                 'fullDate' => $dateObj->format('F d, Y'),
-                'score'    => $score,
-                'class'    => $this->getScoreClass($score), // Helper method
+                'score' => $score,
+                'class' => $this->getScoreClass($score), // Helper method
             ];
 
             $totalScore += $score;
@@ -116,7 +124,7 @@ class ScoreCalculator extends Component
         // Calculate stats efficiently
         if ($count > 0) {
             $scores = array_column($this->monthlyScores, 'score');
-            $goodDays = count(array_filter($scores, fn($s) => $s >= 7));
+            $goodDays = count(array_filter($scores, fn ($s) => $s >= 7));
             $maxScore = max($scores);
 
             $this->stats = [
@@ -150,18 +158,19 @@ class ScoreCalculator extends Component
             ->where('date', $this->selectedDate)
             ->first();
 
-        if (!$diary) {
+        if (! $diary) {
             $this->hasData = false;
             $this->resetData();
+
             return;
         }
 
         $this->hasData = true;
 
-        $this->sleep      = $diary->sleep      ?? '07:00';
+        $this->sleep = $diary->sleep ?? '07:00';
         $this->management = $diary->management ?? '01:00';
-        $this->utilized   = $diary->utilized   ?? '16:00';
-        $this->wasted     = $diary->wasted     ?? '00:00';
+        $this->utilized = $diary->utilized ?? '16:00';
+        $this->wasted = $diary->wasted ?? '00:00';
 
         $checklistArray = json_decode($diary->checklist_array, true) ?? [];
 
@@ -169,9 +178,9 @@ class ScoreCalculator extends Component
         $this->totalChecklist = Cache::remember(
             'total_checklist_count',
             now()->addHour(),
-            fn() => Checklist::count()
+            fn () => Checklist::count()
         );
-        
+
         $this->completedChecklist = count($checklistArray);
 
         $scoreData = ScoreService::calculateFromDiary($diary);
@@ -187,7 +196,7 @@ class ScoreCalculator extends Component
             Log::error('Error updating DailyScore for user '.Auth::id().' on date'.$diary->date.': '.$e->getMessage());
         }
 
-        $this->score       = $scoreData['round'];
+        $this->score = $scoreData['round'];
         $this->detail_data = $scoreData['detail'];
     }
 
@@ -200,22 +209,22 @@ class ScoreCalculator extends Component
 
     public function resetData()
     {
-        $this->totalChecklist     = 0;
+        $this->totalChecklist = 0;
         $this->completedChecklist = 0;
 
-        $this->sleep      = '07:00';
+        $this->sleep = '07:00';
         $this->management = '01:00';
-        $this->utilized   = '16:00';
-        $this->wasted     = '00:00';
+        $this->utilized = '16:00';
+        $this->wasted = '00:00';
 
-        $this->score       = 0;
+        $this->score = 0;
         $this->detail_data = [];
     }
 
     // Helper method for score class
     private function getScoreClass($score): string
     {
-        return match(true) {
+        return match (true) {
             $score >= 8 => 'bg-green-500/20 text-green-400 border border-green-500/30',
             $score >= 6 => 'bg-blue-500/20 text-blue-400 border border-blue-500/30',
             $score >= 4 => 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30',
@@ -226,7 +235,7 @@ class ScoreCalculator extends Component
     // Helper method for badge class
     private function getBadgeClass($average): string
     {
-        return match(true) {
+        return match (true) {
             $average >= 8 => 'bg-green-500/20 text-green-400 border border-green-500/30',
             $average >= 6 => 'bg-blue-500/20 text-blue-400 border border-blue-500/30',
             $average >= 4 => 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30',
@@ -237,7 +246,7 @@ class ScoreCalculator extends Component
     // Helper method for badge text
     private function getBadgeText($average): string
     {
-        return match(true) {
+        return match (true) {
             $average >= 8 => '🌟 Excellent Performance',
             $average >= 6 => '👍 Good Progress',
             $average >= 4 => '⚡ Keep Going',

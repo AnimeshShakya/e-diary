@@ -1,22 +1,22 @@
-<div class="max-w-7xl mx-auto space-y-6 animate-fade-in-up">
+<div class="max-w-7xl mx-auto space-y-4 sm:space-y-6 animate-fade-in-up">
     <!-- Header -->
-    <div class="flex items-center justify-between">
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div>
-            <h2 class="text-xl font-semibold text-gray-200">Edit Affirmations</h2>
-            <p class="text-sm text-gray-400 mt-1">Update your morning and night affirmations</p>
+            <h2 class="text-lg sm:text-xl font-semibold text-gray-200">Edit Affirmations</h2>
+            <p class="text-xs sm:text-sm text-gray-400 mt-1">Update your morning and night affirmations</p>
         </div>
-        <a href="{{ route('affirmations.index') }}" class="px-4 py-2 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-200 text-sm">
+        <a href="{{ route('affirmations.index') }}" class="px-3 sm:px-4 py-2 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-200 text-xs sm:text-sm">
             Back
         </a>
     </div>
 
     <!-- Content -->
     <div class="bg-white/5 rounded-xl border border-gray-800">
-        <div class="p-6">
+        <div class="p-4 sm:p-6">
 
-            <div class="space-y-6">
+            <div class="space-y-4 sm:space-y-6">
                 <!-- Morning Affirmation -->
-                <div class="p-4 rounded-xl bg-yellow-900/10 border border-yellow-500/20">
+                <div class="p-3 sm:p-4 rounded-xl bg-yellow-900/10 border border-yellow-500/20">
                     <div class="flex items-center gap-2 mb-3">
                         <svg class="w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
@@ -48,9 +48,9 @@
                 <div class="mt-4 text-sm text-green-400">{{ session('status') }}</div>
             @endif
         </div>
-        <div class="px-6 py-4 border-t border-gray-800 flex items-center justify-between gap-3">
+        <div class="px-4 sm:px-6 py-3 sm:py-4 border-t border-gray-800 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 sm:gap-3">
             <button wire:click="delete" wire:confirm="Are you sure you want to delete both affirmations?" class="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-white text-sm">Delete</button>
-            <button wire:click="save" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-sm">Save Affirmations</button>
+            <button wire:click="save" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-sm sm:order-last">Save Affirmations</button>
         </div>
     </div>
 </div>

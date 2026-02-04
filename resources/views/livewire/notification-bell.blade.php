@@ -23,7 +23,7 @@
         x-transition:leave="transition ease-in duration-150"
         x-transition:leave-start="opacity-100 scale-100"
         x-transition:leave-end="opacity-0 scale-95"
-        class="absolute right-0 mt-2 w-96 max-h-[32rem] overflow-y-auto rounded-2xl border border-gray-800/60 bg-[#111111] shadow-2xl z-50"
+        class="absolute right-0 mt-2 w-screen max-w-[calc(100vw-2rem)] sm:w-96 sm:max-w-none max-h-[32rem] overflow-y-auto rounded-2xl border border-gray-800/60 bg-[#111111] shadow-2xl z-50"
     >
         <!-- Header -->
         <div class="flex items-center justify-between p-4 border-b border-gray-800/60">

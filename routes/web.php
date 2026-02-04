@@ -1,36 +1,34 @@
 <?php
 
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ScoresExportController;
-use App\Livewire\{
-    Dashboard,
-    Diaries\Index as DiariesIndex,
-    Diaries\Create as DiariesCreate,
-    Diaries\Edit as DiariesEdit,
-    Affirmations\Index as AffirmationsIndex,
-    Affirmations\Create as AffirmationsCreate,
-    Affirmations\Edit as AffirmationsEdit,
-    ScoreCalculator,
-    Scores,
-    Admin\Dashboard as AdminDashboard,
-    Admin\Users\Index as AdminUsersIndex,
-    Admin\Users\Create as AdminUsersCreate,
-    Admin\Users\Edit as AdminUsersEdit,
-    Admin\Diaries\Index as AdminDiariesIndex,
-    Admin\Diaries\Create as AdminDiariesCreate,
-    Admin\Diaries\Edit as AdminDiariesEdit,
-    Admin\Checklists\Index as AdminChecklistsIndex,
-    Admin\Checklists\Create as AdminChecklistsCreate,
-    Admin\Checklists\Edit as AdminChecklistsEdit,
-};
+use App\Livewire\Admin\Checklists\Create as AdminChecklistsCreate;
+use App\Livewire\Admin\Checklists\Edit as AdminChecklistsEdit;
+use App\Livewire\Admin\Checklists\Index as AdminChecklistsIndex;
+use App\Livewire\Admin\Dashboard as AdminDashboard;
+use App\Livewire\Admin\Diaries\Create as AdminDiariesCreate;
+use App\Livewire\Admin\Diaries\Edit as AdminDiariesEdit;
+use App\Livewire\Admin\Diaries\Index as AdminDiariesIndex;
+use App\Livewire\Admin\Users\Create as AdminUsersCreate;
+use App\Livewire\Admin\Users\Edit as AdminUsersEdit;
+use App\Livewire\Admin\Users\Index as AdminUsersIndex;
+use App\Livewire\Affirmations\Create as AffirmationsCreate;
+use App\Livewire\Affirmations\Edit as AffirmationsEdit;
+use App\Livewire\Affirmations\Index as AffirmationsIndex;
+use App\Livewire\Dashboard;
+use App\Livewire\Diaries\Create as DiariesCreate;
+use App\Livewire\Diaries\Edit as DiariesEdit;
+use App\Livewire\Diaries\Index as DiariesIndex;
+use App\Livewire\ScoreCalculator;
+use App\Livewire\Scores;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 
 // -------------------------------
 // Root Route
 // -------------------------------
 Route::get('/', function () {
-    if (!Auth::check()) {
+    if (! Auth::check()) {
         return view('welcome');
     }
 
@@ -115,4 +113,4 @@ Route::middleware(['auth', 'verified', 'admin'])
     });
 
 // Breeze / Auth
-require __DIR__ . '/auth.php';
+require __DIR__.'/auth.php';

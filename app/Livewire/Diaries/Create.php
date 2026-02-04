@@ -3,14 +3,12 @@
 namespace App\Livewire\Diaries;
 
 use App\Models\Checklist;
-use App\Models\DailyScore;
 use App\Models\Diary;
 use App\Models\TimeUsageTrend;
 use App\Services\ScoreService;
 use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 
@@ -45,7 +43,6 @@ class Create extends Component
         $this->get_previous_time_management_matrix();
     }
 
-    
     protected function rules(): array
     {
         return [
@@ -65,7 +62,7 @@ class Create extends Component
             'form.checklist_array' => ['required', 'string'],
         ];
     }
-    
+
     protected function validationAttributes(): array
     {
         return [
@@ -75,7 +72,7 @@ class Create extends Component
             'form.wasted' => 'wasted hours',
         ];
     }
-    
+
     public function get_previous_time_management_matrix(): void
     {
         $previousDiary = Diary::where('user_id', Auth::id())
@@ -102,6 +99,7 @@ class Create extends Component
     private function getMinutes(string $field): int
     {
         $value = trim($this->form[$field] ?? '00:00') ?: '00:00';
+
         return ScoreService::timeToMinutes($value);
     }
 
@@ -117,7 +115,6 @@ class Create extends Component
         }
     }
 
-
     public function recalculateHours(): void
     {
         $this->resetValidation([
@@ -127,9 +124,9 @@ class Create extends Component
             'form.wasted',
         ]);
 
-        $sleepM      = $this->getMinutes('sleep');
+        $sleepM = $this->getMinutes('sleep');
         $managementM = $this->getMinutes('management');
-        $utilizedM   = $this->getMinutes('utilized');
+        $utilizedM = $this->getMinutes('utilized');
 
         $wastedM = max(0, self::DAY_MINUTES - ($sleepM + $managementM + $utilizedM));
         $this->form['wasted'] = ScoreService::minutesToTime($wastedM);
@@ -277,16 +274,15 @@ class Create extends Component
 
     public function getIsFormCompleteProperty()
     {
-        return !empty($this->form['date'])
-            && !empty($this->form['yesterday_sleep_time'])
-            && !empty($this->form['today_wake_time'])
-            && !empty($this->form['sleep'])
-            && !empty($this->form['urgent_important'])
-            && !empty($this->form['urgent_notimportant'])
-            && !empty($this->form['noturgent_important'])
-            && !empty($this->form['noturgent_notimportant'])
-            && !empty($this->form['good_memo'])
-            && !empty($this->form['text']);
+        return ! empty($this->form['date'])
+            && ! empty($this->form['yesterday_sleep_time'])
+            && ! empty($this->form['today_wake_time'])
+            && ! empty($this->form['sleep'])
+            && ! empty($this->form['urgent_important'])
+            && ! empty($this->form['urgent_notimportant'])
+            && ! empty($this->form['noturgent_important'])
+            && ! empty($this->form['noturgent_notimportant'])
+            && ! empty($this->form['good_memo'])
+            && ! empty($this->form['text']);
     }
-
 }
