@@ -109,7 +109,7 @@
                                     font: { size: 11 },
                                     callback: (value) => value + 'h'
                                 },
-                                suggestedMax: 15
+                                suggestedMax: 14
                             }
                         },
                         animation: { duration: 800, easing: 'easeOutQuart' }

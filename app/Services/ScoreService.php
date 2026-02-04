@@ -102,7 +102,6 @@ class ScoreService
         [$h, $m] = explode(':', $time);
         $h = (int) $h;
         $m = (int) $m;
-        // clamp
         if ($h < 0) {
             $h = 0;
         }
@@ -119,10 +118,8 @@ class ScoreService
         return $h * 60 + $m;
     }
 
-    // convert minutes back to "HH:MM"
     public static function minutesToTime(int $minutes): string
     {
-        // clamp between 0 and 1440 (24:00)
         if ($minutes < 0) {
             $minutes = 0;
         }

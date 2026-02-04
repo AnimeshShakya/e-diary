@@ -10,6 +10,7 @@ use App\Services\ScoreService;
 use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 
@@ -238,15 +239,6 @@ class Create extends Component
         TimeUsageTrend::updateOrCreate(
             $save_to_time_usage_trends
         );
-
-        try {
-            $score = ScoreService::calculateFromDiary($diary);
-            DailyScore::updateOrCreate([
-                'user_id' => $diary->user_id,
-                'date' => $diary->date,
-            ], ['score' => $score]);
-        } catch (\Throwable $e) {
-        }
 
         session()->flash('status', 'Diary created successfully!');
 

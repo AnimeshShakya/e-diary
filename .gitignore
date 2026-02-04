@@ -35,3 +35,13 @@ pnpm-debug.log*
 
 # Code style cache
 .php-cs-fixer.cache
+
+*.md
+!README.md
+*.txt
+!LICENSE.txt
+*.pdf
+*.docx
+*.doc
+*.zip
+*.rar
